@@ -1,0 +1,753 @@
+[
+  {
+    "customerId": "CUST-001",
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "john.smith@email.com",
+    "phone": "555-0101",
+    "dateOfBirth": "1975-03-15",
+    "ssn": "***-**-1234",
+    "address": {
+      "street": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zipCode": "10001"
+    }
+  },
+  {
+    "customerId": "CUST-002",
+    "firstName": "Sarah",
+    "lastName": "Johnson",
+    "email": "sarah.johnson@email.com",
+    "phone": "555-0102",
+    "dateOfBirth": "1982-07-22",
+    "ssn": "***-**-5678",
+    "address": {
+      "street": "456 Oak Ave",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zipCode": "90001"
+    }
+  },
+  {
+    "customerId": "CUST-003",
+    "firstName": "Michael",
+    "lastName": "Williams",
+    "email": "michael.williams@email.com",
+    "phone": "555-0103",
+    "dateOfBirth": "1968-11-30",
+    "ssn": "***-**-9012",
+    "address": {
+      "street": "789 Pine Rd",
+      "city": "Chicago",
+      "state": "IL",
+      "zipCode": "60601"
+    }
+  },
+  {
+    "customerId": "CUST-004",
+    "firstName": "Emily",
+    "lastName": "Brown",
+    "email": "emily.brown@email.com",
+    "phone": "555-0104",
+    "dateOfBirth": "1990-04-18",
+    "ssn": "***-**-3456",
+    "address": {
+      "street": "321 Elm St",
+      "city": "Houston",
+      "state": "TX",
+      "zipCode": "77001"
+    }
+  },
+  {
+    "customerId": "CUST-005",
+    "firstName": "David",
+    "lastName": "Jones",
+    "email": "david.jones@email.com",
+    "phone": "555-0105",
+    "dateOfBirth": "1978-09-05",
+    "ssn": "***-**-7890",
+    "address": {
+      "street": "654 Maple Dr",
+      "city": "Phoenix",
+      "state": "AZ",
+      "zipCode": "85001"
+    }
+  },
+  {
+    "customerId": "CUST-006",
+    "firstName": "Jennifer",
+    "lastName": "Garcia",
+    "email": "jennifer.garcia@email.com",
+    "phone": "555-0106",
+    "dateOfBirth": "1985-12-10",
+    "ssn": "***-**-2345",
+    "address": {
+      "street": "987 Cedar Ln",
+      "city": "Philadelphia",
+      "state": "PA",
+      "zipCode": "19101"
+    }
+  },
+  {
+    "customerId": "CUST-007",
+    "firstName": "Robert",
+    "lastName": "Martinez",
+    "email": "robert.martinez@email.com",
+    "phone": "555-0107",
+    "dateOfBirth": "1972-06-25",
+    "ssn": "***-**-6789",
+    "address": {
+      "street": "246 Birch St",
+      "city": "San Antonio",
+      "state": "TX",
+      "zipCode": "78201"
+    }
+  },
+  {
+    "customerId": "CUST-008",
+    "firstName": "Lisa",
+    "lastName": "Rodriguez",
+    "email": "lisa.rodriguez@email.com",
+    "phone": "555-0108",
+    "dateOfBirth": "1988-02-14",
+    "ssn": "***-**-0123",
+    "address": {
+      "street": "135 Willow Way",
+      "city": "San Diego",
+      "state": "CA",
+      "zipCode": "92101"
+    }
+  },
+  {
+    "customerId": "CUST-009",
+    "firstName": "James",
+    "lastName": "Anderson",
+    "email": "james.anderson@email.com",
+    "phone": "555-0109",
+    "dateOfBirth": "1965-08-30",
+    "ssn": "***-**-4567",
+    "address": {
+      "street": "864 Spruce Ave",
+      "city": "Dallas",
+      "state": "TX",
+      "zipCode": "75201"
+    }
+  },
+  {
+    "customerId": "CUST-010",
+    "firstName": "Mary",
+    "lastName": "Thomas",
+    "email": "mary.thomas@email.com",
+    "phone": "555-0110",
+    "dateOfBirth": "1992-11-20",
+    "ssn": "***-**-8901",
+    "address": {
+      "street": "753 Ash Ct",
+      "city": "San Jose",
+      "state": "CA",
+      "zipCode": "95101"
+    }
+  },
+  {
+    "customerId": "CUST-011",
+    "firstName": "William",
+    "lastName": "Taylor",
+    "email": "william.taylor@email.com",
+    "phone": "555-0111",
+    "dateOfBirth": "1970-05-08",
+    "ssn": "***-**-3456",
+    "address": {
+      "street": "159 Poplar Rd",
+      "city": "Austin",
+      "state": "TX",
+      "zipCode": "78701"
+    }
+  },
+  {
+    "customerId": "CUST-012",
+    "firstName": "Patricia",
+    "lastName": "Moore",
+    "email": "patricia.moore@email.com",
+    "phone": "555-0112",
+    "dateOfBirth": "1983-09-17",
+    "ssn": "***-**-7890",
+    "address": {
+      "street": "357 Cherry St",
+      "city": "Jacksonville",
+      "state": "FL",
+      "zipCode": "32201"
+    }
+  },
+  {
+    "customerId": "CUST-013",
+    "firstName": "Richard",
+    "lastName": "Jackson",
+    "email": "richard.jackson@email.com",
+    "phone": "555-0113",
+    "dateOfBirth": "1977-01-22",
+    "ssn": "***-**-1234",
+    "address": {
+      "street": "951 Walnut Dr",
+      "city": "San Francisco",
+      "state": "CA",
+      "zipCode": "94101"
+    }
+  },
+  {
+    "customerId": "CUST-014",
+    "firstName": "Linda",
+    "lastName": "White",
+    "email": "linda.white@email.com",
+    "phone": "555-0114",
+    "dateOfBirth": "1989-04-03",
+    "ssn": "***-**-5678",
+    "address": {
+      "street": "753 Hickory Ln",
+      "city": "Columbus",
+      "state": "OH",
+      "zipCode": "43201"
+    }
+  },
+  {
+    "customerId": "CUST-015",
+    "firstName": "Charles",
+    "lastName": "Harris",
+    "email": "charles.harris@email.com",
+    "phone": "555-0115",
+    "dateOfBirth": "1974-07-19",
+    "ssn": "***-**-9012",
+    "address": {
+      "street": "246 Magnolia Ave",
+      "city": "Fort Worth",
+      "state": "TX",
+      "zipCode": "76101"
+    }
+  },
+  {
+    "customerId": "CUST-016",
+    "firstName": "Barbara",
+    "lastName": "Martin",
+    "email": "barbara.martin@email.com",
+    "phone": "555-0116",
+    "dateOfBirth": "1986-10-12",
+    "ssn": "***-**-3456",
+    "address": {
+      "street": "864 Dogwood Ct",
+      "city": "Charlotte",
+      "state": "NC",
+      "zipCode": "28201"
+    }
+  },
+  {
+    "customerId": "CUST-017",
+    "firstName": "Joseph",
+    "lastName": "Thompson",
+    "email": "joseph.thompson@email.com",
+    "phone": "555-0117",
+    "dateOfBirth": "1969-12-28",
+    "ssn": "***-**-7890",
+    "address": {
+      "street": "159 Sycamore Rd",
+      "city": "Indianapolis",
+      "state": "IN",
+      "zipCode": "46201"
+    }
+  },
+  {
+    "customerId": "CUST-018",
+    "firstName": "Susan",
+    "lastName": "Lee",
+    "email": "susan.lee@email.com",
+    "phone": "555-0118",
+    "dateOfBirth": "1991-03-07",
+    "ssn": "***-**-1234",
+    "address": {
+      "street": "357 Beech St",
+      "city": "Seattle",
+      "state": "WA",
+      "zipCode": "98101"
+    }
+  },
+  {
+    "customerId": "CUST-019",
+    "firstName": "Thomas",
+    "lastName": "Clark",
+    "email": "thomas.clark@email.com",
+    "phone": "555-0119",
+    "dateOfBirth": "1976-06-15",
+    "ssn": "***-**-5678",
+    "address": {
+      "street": "951 Redwood Dr",
+      "city": "Denver",
+      "state": "CO",
+      "zipCode": "80201"
+    }
+  },
+  {
+    "customerId": "CUST-020",
+    "firstName": "Jessica",
+    "lastName": "Lewis",
+    "email": "jessica.lewis@email.com",
+    "phone": "555-0120",
+    "dateOfBirth": "1984-09-23",
+    "ssn": "***-**-9012",
+    "address": {
+      "street": "753 Fir Ln",
+      "city": "Boston",
+      "state": "MA",
+      "zipCode": "02101"
+    }
+  },
+  {
+    "customerId": "CUST-021",
+    "firstName": "Daniel",
+    "lastName": "Walker",
+    "email": "daniel.walker@email.com",
+    "phone": "555-0121",
+    "dateOfBirth": "1973-02-11",
+    "ssn": "***-**-3456",
+    "address": {
+      "street": "246 Cypress Ave",
+      "city": "El Paso",
+      "state": "TX",
+      "zipCode": "79901"
+    }
+  },
+  {
+    "customerId": "CUST-022",
+    "firstName": "Nancy",
+    "lastName": "Hall",
+    "email": "nancy.hall@email.com",
+    "phone": "555-0122",
+    "dateOfBirth": "1987-05-29",
+    "ssn": "***-**-7890",
+    "address": {
+      "street": "864 Palm Ct",
+      "city": "Nashville",
+      "state": "TN",
+      "zipCode": "37201"
+    }
+  },
+  {
+    "customerId": "CUST-023",
+    "firstName": "Matthew",
+    "lastName": "Allen",
+    "email": "matthew.allen@email.com",
+    "phone": "555-0123",
+    "dateOfBirth": "1971-08-04",
+    "ssn": "***-**-1234",
+    "address": {
+      "street": "159 Laurel Rd",
+      "city": "Detroit",
+      "state": "MI",
+      "zipCode": "48201"
+    }
+  },
+  {
+    "customerId": "CUST-024",
+    "firstName": "Karen",
+    "lastName": "Young",
+    "email": "karen.young@email.com",
+    "phone": "555-0124",
+    "dateOfBirth": "1993-11-16",
+    "ssn": "***-**-5678",
+    "address": {
+      "street": "357 Juniper St",
+      "city": "Memphis",
+      "state": "TN",
+      "zipCode": "38101"
+    }
+  },
+  {
+    "customerId": "CUST-025",
+    "firstName": "Christopher",
+    "lastName": "King",
+    "email": "christopher.king@email.com",
+    "phone": "555-0125",
+    "dateOfBirth": "1979-01-27",
+    "ssn": "***-**-9012",
+    "address": {
+      "street": "951 Acacia Dr",
+      "city": "Portland",
+      "state": "OR",
+      "zipCode": "97201"
+    }
+  },
+  {
+    "customerId": "CUST-026",
+    "firstName": "Betty",
+    "lastName": "Wright",
+    "email": "betty.wright@email.com",
+    "phone": "555-0126",
+    "dateOfBirth": "1981-04-13",
+    "ssn": "***-**-3456",
+    "address": {
+      "street": "753 Hawthorn Ln",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "zipCode": "73101"
+    }
+  },
+  {
+    "customerId": "CUST-027",
+    "firstName": "Mark",
+    "lastName": "Lopez",
+    "email": "mark.lopez@email.com",
+    "phone": "555-0127",
+    "dateOfBirth": "1966-07-08",
+    "ssn": "***-**-7890",
+    "address": {
+      "street": "246 Cottonwood Ave",
+      "city": "Las Vegas",
+      "state": "NV",
+      "zipCode": "89101"
+    }
+  },
+  {
+    "customerId": "CUST-028",
+    "firstName": "Dorothy",
+    "lastName": "Hill",
+    "email": "dorothy.hill@email.com",
+    "phone": "555-0128",
+    "dateOfBirth": "1990-10-24",
+    "ssn": "***-**-1234",
+    "address": {
+      "street": "864 Mesquite Ct",
+      "city": "Louisville",
+      "state": "KY",
+      "zipCode": "40201"
+    }
+  },
+  {
+    "customerId": "CUST-029",
+    "firstName": "Donald",
+    "lastName": "Scott",
+    "email": "donald.scott@email.com",
+    "phone": "555-0129",
+    "dateOfBirth": "1975-12-31",
+    "ssn": "***-**-5678",
+    "address": {
+      "street": "159 Aspen Rd",
+      "city": "Baltimore",
+      "state": "MD",
+      "zipCode": "21201"
+    }
+  },
+  {
+    "customerId": "CUST-030",
+    "firstName": "Michelle",
+    "lastName": "Green",
+    "email": "michelle.green@email.com",
+    "phone": "555-0130",
+    "dateOfBirth": "1988-03-19",
+    "ssn": "***-**-9012",
+    "address": {
+      "street": "357 Boxwood St",
+      "city": "Milwaukee",
+      "state": "WI",
+      "zipCode": "53201"
+    }
+  },
+  {
+    "customerId": "CUST-031",
+    "firstName": "Paul",
+    "lastName": "Adams",
+    "email": "paul.adams@email.com",
+    "phone": "555-0131",
+    "dateOfBirth": "1972-06-06",
+    "ssn": "***-**-3456",
+    "address": {
+      "street": "951 Buckeye Dr",
+      "city": "Albuquerque",
+      "state": "NM",
+      "zipCode": "87101"
+    }
+  },
+  {
+    "customerId": "CUST-032",
+    "firstName": "Sandra",
+    "lastName": "Baker",
+    "email": "sandra.baker@email.com",
+    "phone": "555-0132",
+    "dateOfBirth": "1985-09-14",
+    "ssn": "***-**-7890",
+    "address": {
+      "street": "753 Chestnut Ln",
+      "city": "Tucson",
+      "state": "AZ",
+      "zipCode": "85701"
+    }
+  },
+  {
+    "customerId": "CUST-033",
+    "firstName": "Steven",
+    "lastName": "Nelson",
+    "email": "steven.nelson@email.com",
+    "phone": "555-0133",
+    "dateOfBirth": "1970-11-22",
+    "ssn": "***-**-1234",
+    "address": {
+      "street": "246 Ironwood Ave",
+      "city": "Fresno",
+      "state": "CA",
+      "zipCode": "93701"
+    }
+  },
+  {
+    "customerId": "CUST-034",
+    "firstName": "Ashley",
+    "lastName": "Carter",
+    "email": "ashley.carter@email.com",
+    "phone": "555-0134",
+    "dateOfBirth": "1994-02-09",
+    "ssn": "***-**-5678",
+    "address": {
+      "street": "864 Sequoia Ct",
+      "city": "Sacramento",
+      "state": "CA",
+      "zipCode": "95814"
+    }
+  },
+  {
+    "customerId": "CUST-035",
+    "firstName": "Andrew",
+    "lastName": "Mitchell",
+    "email": "andrew.mitchell@email.com",
+    "phone": "555-0135",
+    "dateOfBirth": "1977-05-27",
+    "ssn": "***-**-9012",
+    "address": {
+      "street": "159 Alder Rd",
+      "city": "Long Beach",
+      "state": "CA",
+      "zipCode": "90801"
+    }
+  },
+  {
+    "customerId": "CUST-036",
+    "firstName": "Kimberly",
+    "lastName": "Perez",
+    "email": "kimberly.perez@email.com",
+    "phone": "555-0136",
+    "dateOfBirth": "1983-08-15",
+    "ssn": "***-**-3456",
+    "address": {
+      "street": "357 Hemlock St",
+      "city": "Kansas City",
+      "state": "MO",
+      "zipCode": "64101"
+    }
+  },
+  {
+    "customerId": "CUST-037",
+    "firstName": "Joshua",
+    "lastName": "Roberts",
+    "email": "joshua.roberts@email.com",
+    "phone": "555-0137",
+    "dateOfBirth": "1969-01-03",
+    "ssn": "***-**-7890",
+    "address": {
+      "street": "951 Linden Dr",
+      "city": "Mesa",
+      "state": "AZ",
+      "zipCode": "85201"
+    }
+  },
+  {
+    "customerId": "CUST-038",
+    "firstName": "Donna",
+    "lastName": "Turner",
+    "email": "donna.turner@email.com",
+    "phone": "555-0138",
+    "dateOfBirth": "1992-04-20",
+    "ssn": "***-**-1234",
+    "address": {
+      "street": "753 Basswood Ln",
+      "city": "Virginia Beach",
+      "state": "VA",
+      "zipCode": "23450"
+    }
+  },
+  {
+    "customerId": "CUST-039",
+    "firstName": "Kenneth",
+    "lastName": "Phillips",
+    "email": "kenneth.phillips@email.com",
+    "phone": "555-0139",
+    "dateOfBirth": "1974-07-07",
+    "ssn": "***-**-5678",
+    "address": {
+      "street": "246 Catalpa Ave",
+      "city": "Atlanta",
+      "state": "GA",
+      "zipCode": "30301"
+    }
+  },
+  {
+    "customerId": "CUST-040",
+    "firstName": "Carol",
+    "lastName": "Campbell",
+    "email": "carol.campbell@email.com",
+    "phone": "555-0140",
+    "dateOfBirth": "1986-10-26",
+    "ssn": "***-**-9012",
+    "address": {
+      "street": "864 Mulberry Ct",
+      "city": "Colorado Springs",
+      "state": "CO",
+      "zipCode": "80901"
+    }
+  },
+  {
+    "customerId": "CUST-041",
+    "firstName": "Brian",
+    "lastName": "Parker",
+    "email": "brian.parker@email.com",
+    "phone": "555-0141",
+    "dateOfBirth": "1971-12-13",
+    "ssn": "***-**-3456",
+    "address": {
+      "street": "159 Persimmon Rd",
+      "city": "Raleigh",
+      "state": "NC",
+      "zipCode": "27601"
+    }
+  },
+  {
+    "customerId": "CUST-042",
+    "firstName": "Amanda",
+    "lastName": "Evans",
+    "email": "amanda.evans@email.com",
+    "phone": "555-0142",
+    "dateOfBirth": "1989-03-02",
+    "ssn": "***-**-7890",
+    "address": {
+      "street": "357 Pecan St",
+      "city": "Omaha",
+      "state": "NE",
+      "zipCode": "68101"
+    }
+  },
+  {
+    "customerId": "CUST-043",
+    "firstName": "George",
+    "lastName": "Edwards",
+    "email": "george.edwards@email.com",
+    "phone": "555-0143",
+    "dateOfBirth": "1968-05-18",
+    "ssn": "***-**-1234",
+    "address": {
+      "street": "951 Walnut Dr",
+      "city": "Miami",
+      "state": "FL",
+      "zipCode": "33101"
+    }
+  },
+  {
+    "customerId": "CUST-044",
+    "firstName": "Melissa",
+    "lastName": "Collins",
+    "email": "melissa.collins@email.com",
+    "phone": "555-0144",
+    "dateOfBirth": "1995-08-25",
+    "ssn": "***-**-5678",
+    "address": {
+      "street": "753 Peachtree Ln",
+      "city": "Oakland",
+      "state": "CA",
+      "zipCode": "94601"
+    }
+  },
+  {
+    "customerId": "CUST-045",
+    "firstName": "Ronald",
+    "lastName": "Stewart",
+    "email": "ronald.stewart@email.com",
+    "phone": "555-0145",
+    "dateOfBirth": "1973-11-10",
+    "ssn": "***-**-9012",
+    "address": {
+      "street": "246 Magnolia Ave",
+      "city": "Minneapolis",
+      "state": "MN",
+      "zipCode": "55401"
+    }
+  },
+  {
+    "customerId": "CUST-046",
+    "firstName": "Deborah",
+    "lastName": "Sanchez",
+    "email": "deborah.sanchez@email.com",
+    "phone": "555-0146",
+    "dateOfBirth": "1987-01-28",
+    "ssn": "***-**-3456",
+    "address": {
+      "street": "864 Sweetgum Ct",
+      "city": "Tulsa",
+      "state": "OK",
+      "zipCode": "74101"
+    }
+  },
+  {
+    "customerId": "CUST-047",
+    "firstName": "Kevin",
+    "lastName": "Morris",
+    "email": "kevin.morris@email.com",
+    "phone": "555-0147",
+    "dateOfBirth": "1976-04-16",
+    "ssn": "***-**-7890",
+    "address": {
+      "street": "159 Poplar Rd",
+      "city": "Cleveland",
+      "state": "OH",
+      "zipCode": "44101"
+    }
+  },
+  {
+    "customerId": "CUST-048",
+    "firstName": "Stephanie",
+    "lastName": "Rogers",
+    "email": "stephanie.rogers@email.com",
+    "phone": "555-0148",
+    "dateOfBirth": "1991-07-05",
+    "ssn": "***-**-1234",
+    "address": {
+      "street": "357 Buttonwood St",
+      "city": "Wichita",
+      "state": "KS",
+      "zipCode": "67201"
+    }
+  },
+  {
+    "customerId": "CUST-049",
+    "firstName": "Jeffrey",
+    "lastName": "Reed",
+    "email": "jeffrey.reed@email.com",
+    "phone": "555-0149",
+    "dateOfBirth": "1967-09-22",
+    "ssn": "***-**-5678",
+    "address": {
+      "street": "951 Redbud Dr",
+      "city": "Arlington",
+      "state": "TX",
+      "zipCode": "76010"
+    }
+  },
+  {
+    "customerId": "CUST-050",
+    "firstName": "Rebecca",
+    "lastName": "Cook",
+    "email": "rebecca.cook@email.com",
+    "phone": "555-0150",
+    "dateOfBirth": "1984-12-09",
+    "ssn": "***-**-9012",
+    "address": {
+      "street": "753 Sassafras Ln",
+      "city": "New Orleans",
+      "state": "LA",
+      "zipCode": "70112"
+    }
+  }
+]
+
