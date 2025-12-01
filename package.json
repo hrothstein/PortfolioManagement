@@ -7,10 +7,15 @@
     "dev": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "build": "cd client && npm run build",
-    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "heroku-postbuild": "cd server && npm install && cd ../client && npm install && npm run build && mkdir -p ../server/public && cp -r dist/* ../server/public/"
   },
   "keywords": ["portfolio", "wealth-management", "financial"],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  }
 }
 
