@@ -1,0 +1,535 @@
+openapi: 3.0.0
+info:
+  title: Portfolio Management System - Clients API
+  version: 1.0.0
+  description: |
+    RESTful API for managing wealth management clients.
+    
+    This API provides full CRUD operations for client management including:
+    - Client profiles with risk tolerance and investment objectives
+    - Portfolio summaries with asset allocation
+    - Integration with accounts, portfolios, and holdings
+  contact:
+    name: API Support
+    email: support@portfoliomgmt.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://portfolio-mgmt-system-997b2c07833c.herokuapp.com/api/v1
+    description: Production server
+  - url: http://localhost:3001/api/v1
+    description: Development server
+
+tags:
+  - name: Clients
+    description: Client management endpoints
+
+paths:
+  /clients:
+    get:
+      summary: List all clients
+      description: Retrieve a list of all clients in the system
+      operationId: getClients
+      tags:
+        - Clients
+      responses:
+        '200':
+          description: List of clients retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Client'
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-12-02T10:00:00Z"
+              example:
+                success: true
+                data:
+                  - clientId: "CLI-001"
+                    customerId: "CUST-001"
+                    firstName: "John"
+                    lastName: "Smith"
+                    email: "john.smith@email.com"
+                    phone: "555-0101"
+                    dateOfBirth: "1975-03-15"
+                    riskTolerance: "MODERATE"
+                    investmentObjective: "GROWTH"
+                    advisorId: "ADV-001"
+                timestamp: "2024-12-02T10:00:00Z"
+
+    post:
+      summary: Create a new client
+      description: Add a new client to the system
+      operationId: createClient
+      tags:
+        - Clients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientCreate'
+            example:
+              firstName: "Jane"
+              lastName: "Doe"
+              email: "jane.doe@email.com"
+              phone: "555-0199"
+              dateOfBirth: "1985-06-20"
+              riskTolerance: "MODERATE"
+              investmentObjective: "GROWTH"
+              advisorId: "ADV-001"
+              address:
+                street: "123 Main St"
+                city: "San Francisco"
+                state: "CA"
+                zipCode: "94102"
+      responses:
+        '201':
+          description: Client created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Client'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /clients/{clientId}:
+    get:
+      summary: Get client by ID
+      description: Retrieve detailed information about a specific client
+      operationId: getClientById
+      tags:
+        - Clients
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Client details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Client'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update a client
+      description: Update an existing client's information
+      operationId: updateClient
+      tags:
+        - Clients
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientUpdate'
+            example:
+              riskTolerance: "AGGRESSIVE"
+              investmentObjective: "GROWTH"
+              phone: "555-0200"
+      responses:
+        '200':
+          description: Client updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Client'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete a client
+      description: |
+        Remove a client and all related data from the system.
+        
+        **Warning:** This operation also deletes:
+        - All accounts belonging to the client
+        - All portfolios within those accounts
+        - All holdings within those portfolios
+        - All transactions related to those portfolios
+      operationId: deleteClient
+      tags:
+        - Clients
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Client deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Client'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /clients/{clientId}/summary:
+    get:
+      summary: Get client portfolio summary
+      description: |
+        Retrieve comprehensive portfolio summary for a client including:
+        - Total market value across all portfolios
+        - Total cost basis and unrealized gain/loss
+        - Asset allocation breakdown by security type
+        - Account and portfolio counts
+      operationId: getClientSummary
+      tags:
+        - Clients
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Client summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ClientSummary'
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                success: true
+                data:
+                  client:
+                    clientId: "CLI-001"
+                    firstName: "John"
+                    lastName: "Smith"
+                    email: "john.smith@email.com"
+                    riskTolerance: "MODERATE"
+                    investmentObjective: "GROWTH"
+                  summary:
+                    totalAccounts: 2
+                    totalPortfolios: 3
+                    totalMarketValue: 485000.00
+                    totalCostBasis: 425000.00
+                    totalUnrealizedGain: 60000.00
+                    totalUnrealizedGainPercent: 14.12
+                    assetAllocation:
+                      STOCK: 65.5
+                      BOND: 20.0
+                      MUTUAL_FUND: 10.0
+                      ETF: 4.5
+                timestamp: "2024-12-02T10:00:00Z"
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: Unique identifier for the client
+      schema:
+        type: string
+      example: CLI-001
+
+  schemas:
+    Client:
+      type: object
+      description: A wealth management client
+      properties:
+        clientId:
+          type: string
+          description: Unique identifier for the client
+          example: CLI-001
+        customerId:
+          type: string
+          description: Reference to external customer system (bankingcoredemo)
+          example: CUST-001
+        firstName:
+          type: string
+          description: Client's first name
+          example: John
+        lastName:
+          type: string
+          description: Client's last name
+          example: Smith
+        email:
+          type: string
+          format: email
+          description: Client's email address
+          example: john.smith@email.com
+        phone:
+          type: string
+          description: Client's phone number
+          example: 555-0101
+        dateOfBirth:
+          type: string
+          format: date
+          description: Client's date of birth
+          example: "1975-03-15"
+        ssn:
+          type: string
+          description: Masked Social Security Number
+          example: "***-**-1234"
+        riskTolerance:
+          type: string
+          description: Client's risk tolerance level
+          enum:
+            - CONSERVATIVE
+            - MODERATE
+            - AGGRESSIVE
+          example: MODERATE
+        investmentObjective:
+          type: string
+          description: Client's primary investment objective
+          enum:
+            - INCOME
+            - GROWTH
+            - BALANCED
+            - PRESERVATION
+          example: GROWTH
+        advisorId:
+          type: string
+          description: ID of the assigned financial advisor
+          example: ADV-001
+        address:
+          $ref: '#/components/schemas/Address'
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the client was created
+          example: "2024-01-15T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the client was last updated
+          example: "2024-01-15T10:00:00Z"
+      required:
+        - clientId
+        - firstName
+        - lastName
+        - email
+
+    ClientCreate:
+      type: object
+      description: Data required to create a new client
+      properties:
+        firstName:
+          type: string
+          example: Jane
+        lastName:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: jane.doe@email.com
+        phone:
+          type: string
+          example: 555-0199
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1985-06-20"
+        riskTolerance:
+          type: string
+          enum:
+            - CONSERVATIVE
+            - MODERATE
+            - AGGRESSIVE
+          example: MODERATE
+        investmentObjective:
+          type: string
+          enum:
+            - INCOME
+            - GROWTH
+            - BALANCED
+            - PRESERVATION
+          example: GROWTH
+        advisorId:
+          type: string
+          example: ADV-001
+        address:
+          $ref: '#/components/schemas/Address'
+      required:
+        - firstName
+        - lastName
+        - email
+
+    ClientUpdate:
+      type: object
+      description: Data for updating a client (all fields optional)
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        riskTolerance:
+          type: string
+          enum:
+            - CONSERVATIVE
+            - MODERATE
+            - AGGRESSIVE
+        investmentObjective:
+          type: string
+          enum:
+            - INCOME
+            - GROWTH
+            - BALANCED
+            - PRESERVATION
+        advisorId:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+
+    ClientSummary:
+      type: object
+      description: Client with portfolio summary information
+      properties:
+        client:
+          $ref: '#/components/schemas/Client'
+        summary:
+          type: object
+          properties:
+            totalAccounts:
+              type: integer
+              description: Number of accounts owned by the client
+              example: 2
+            totalPortfolios:
+              type: integer
+              description: Number of portfolios across all accounts
+              example: 3
+            totalMarketValue:
+              type: number
+              format: double
+              description: Total current market value of all holdings
+              example: 485000.00
+            totalCostBasis:
+              type: number
+              format: double
+              description: Total cost basis of all holdings
+              example: 425000.00
+            totalUnrealizedGain:
+              type: number
+              format: double
+              description: Total unrealized gain/loss (market value - cost basis)
+              example: 60000.00
+            totalUnrealizedGainPercent:
+              type: number
+              format: double
+              description: Unrealized gain/loss as a percentage
+              example: 14.12
+            assetAllocation:
+              type: object
+              description: Breakdown of holdings by asset type (percentages)
+              additionalProperties:
+                type: number
+              example:
+                STOCK: 65.5
+                BOND: 20.0
+                MUTUAL_FUND: 10.0
+                ETF: 4.5
+
+    Address:
+      type: object
+      description: Physical address
+      properties:
+        street:
+          type: string
+          example: 123 Main St
+        city:
+          type: string
+          example: New York
+        state:
+          type: string
+          example: NY
+        zipCode:
+          type: string
+          example: "10001"
+
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Error code
+              example: NOT_FOUND
+            message:
+              type: string
+              description: Human-readable error message
+              example: Client not found
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: NOT_FOUND
+              message: Client not found
+            timestamp: "2024-12-02T10:00:00Z"
+
