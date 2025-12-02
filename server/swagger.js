@@ -1,5 +1,11 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 
+// Determine the server URL based on environment
+const isProduction = process.env.NODE_ENV === 'production';
+const serverUrl = isProduction 
+  ? 'https://portfolio-mgmt-system-997b2c07833c.herokuapp.com/api/v1'
+  : 'http://localhost:3001/api/v1';
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -14,12 +20,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3001/api/v1',
-        description: 'Development server'
-      },
-      {
-        url: 'https://your-production-url.herokuapp.com/api/v1',
-        description: 'Production server'
+        url: serverUrl,
+        description: isProduction ? 'Production server' : 'Development server'
       }
     ],
     tags: [
