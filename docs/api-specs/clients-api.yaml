@@ -34,7 +34,18 @@ paths:
       operationId: getClients
       tags:
         - Clients
-      
+      parameters:
+        - name: riskTolerance
+          in: query
+          required: false
+          description: Filter clients by risk tolerance level
+          schema:
+            type: string
+            enum:
+              - CONSERVATIVE
+              - MODERATE
+              - AGGRESSIVE
+          example: MODERATE
       responses:
         '200':
           description: List of clients retrieved successfully
