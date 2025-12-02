@@ -34,6 +34,14 @@ paths:
       operationId: getClients
       tags:
         - Clients
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optional request body
+              additionalProperties: true
       responses:
         '200':
           description: List of clients retrieved successfully
@@ -120,6 +128,14 @@ paths:
         - Clients
       parameters:
         - $ref: '#/components/parameters/clientId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optional request body
+              additionalProperties: true
       responses:
         '200':
           description: Client details retrieved successfully
@@ -224,6 +240,14 @@ paths:
         - Clients
       parameters:
         - $ref: '#/components/parameters/clientId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optional request body
+              additionalProperties: true
       responses:
         '200':
           description: Client summary retrieved successfully
