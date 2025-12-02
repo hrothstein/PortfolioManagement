@@ -2,7 +2,101 @@ const express = require('express');
 const router = express.Router();
 const { datastore } = require('../datastore');
 
-// GET /api/v1/securities - List all securities
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Security:
+ *       type: object
+ *       properties:
+ *         securityId:
+ *           type: string
+ *           example: SEC-001
+ *         symbol:
+ *           type: string
+ *           example: AAPL
+ *         securityName:
+ *           type: string
+ *           example: Apple Inc.
+ *         securityType:
+ *           type: string
+ *           enum: [STOCK, BOND, MUTUAL_FUND, ETF]
+ *           example: STOCK
+ *         sector:
+ *           type: string
+ *           example: TECHNOLOGY
+ *         currentPrice:
+ *           type: number
+ *           example: 178.50
+ *         previousClose:
+ *           type: number
+ *           example: 177.25
+ *         dayChange:
+ *           type: number
+ *           example: 1.25
+ *         dayChangePercent:
+ *           type: number
+ *           example: 0.71
+ *         fiftyTwoWeekHigh:
+ *           type: number
+ *           example: 199.62
+ *         fiftyTwoWeekLow:
+ *           type: number
+ *           example: 124.17
+ *         dividendYield:
+ *           type: number
+ *           example: 0.55
+ *         peRatio:
+ *           type: number
+ *           example: 28.5
+ *         marketCap:
+ *           type: number
+ *           example: 2850000000000
+ *         bondRating:
+ *           type: string
+ *           nullable: true
+ *           example: null
+ *         maturityDate:
+ *           type: string
+ *           format: date
+ *           nullable: true
+ *         couponRate:
+ *           type: number
+ *           nullable: true
+ *         expenseRatio:
+ *           type: number
+ *           nullable: true
+ *         lastUpdated:
+ *           type: string
+ *           format: date-time
+ */
+
+/**
+ * @swagger
+ * /securities:
+ *   get:
+ *     summary: List all securities
+ *     tags: [Securities]
+ *     description: Retrieve a list of all securities with current market data
+ *     responses:
+ *       200:
+ *         description: List of securities
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Security'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 router.get('/', (req, res) => {
   res.json({
     success: true,
@@ -11,7 +105,53 @@ router.get('/', (req, res) => {
   });
 });
 
-// GET /api/v1/securities/:securityId - Get security by ID
+/**
+ * @swagger
+ * /securities/{securityId}:
+ *   get:
+ *     summary: Get security by ID
+ *     tags: [Securities]
+ *     description: Retrieve detailed information about a specific security
+ *     parameters:
+ *       - in: path
+ *         name: securityId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The security ID
+ *         example: SEC-001
+ *     responses:
+ *       200:
+ *         description: Security details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Security'
+ *       404:
+ *         description: Security not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: object
+ *                   properties:
+ *                     code:
+ *                       type: string
+ *                       example: NOT_FOUND
+ *                     message:
+ *                       type: string
+ *                       example: Security not found
+ */
 router.get('/:securityId', (req, res) => {
   const security = datastore.securities.find(s => s.securityId === req.params.securityId);
   
@@ -33,7 +173,36 @@ router.get('/:securityId', (req, res) => {
   });
 });
 
-// GET /api/v1/securities/symbol/:symbol - Get security by symbol
+/**
+ * @swagger
+ * /securities/symbol/{symbol}:
+ *   get:
+ *     summary: Get security by symbol
+ *     tags: [Securities]
+ *     description: Retrieve security information by ticker symbol
+ *     parameters:
+ *       - in: path
+ *         name: symbol
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ticker symbol
+ *         example: AAPL
+ *     responses:
+ *       200:
+ *         description: Security details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Security'
+ *       404:
+ *         description: Security not found
+ */
 router.get('/symbol/:symbol', (req, res) => {
   const security = datastore.securities.find(s => s.symbol === req.params.symbol.toUpperCase());
   
@@ -55,7 +224,37 @@ router.get('/symbol/:symbol', (req, res) => {
   });
 });
 
-// GET /api/v1/securities/type/:type - Get securities by type
+/**
+ * @swagger
+ * /securities/type/{type}:
+ *   get:
+ *     summary: Get securities by type
+ *     tags: [Securities]
+ *     description: Retrieve all securities of a specific type
+ *     parameters:
+ *       - in: path
+ *         name: type
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [STOCK, BOND, MUTUAL_FUND, ETF]
+ *         description: The security type
+ *         example: STOCK
+ *     responses:
+ *       200:
+ *         description: List of securities of the specified type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Security'
+ */
 router.get('/type/:type', (req, res) => {
   const securities = datastore.securities.filter(s => s.securityType === req.params.type.toUpperCase());
   
@@ -66,7 +265,49 @@ router.get('/type/:type', (req, res) => {
   });
 });
 
-// PUT /api/v1/securities/:securityId - Update security (for demo price updates)
+/**
+ * @swagger
+ * /securities/{securityId}:
+ *   put:
+ *     summary: Update security price
+ *     tags: [Securities]
+ *     description: Update a security's price (for demo purposes). This also updates all holdings with this security.
+ *     parameters:
+ *       - in: path
+ *         name: securityId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The security ID
+ *         example: SEC-001
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPrice:
+ *                 type: number
+ *                 description: New current price
+ *                 example: 185.00
+ *           example:
+ *             currentPrice: 185.00
+ *     responses:
+ *       200:
+ *         description: Security updated successfully (holdings are also recalculated)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Security'
+ *       404:
+ *         description: Security not found
+ */
 router.put('/:securityId', (req, res) => {
   const index = datastore.securities.findIndex(s => s.securityId === req.params.securityId);
   
@@ -117,4 +358,3 @@ router.put('/:securityId', (req, res) => {
 });
 
 module.exports = router;
-

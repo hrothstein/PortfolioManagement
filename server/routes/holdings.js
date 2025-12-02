@@ -2,7 +2,81 @@ const express = require('express');
 const router = express.Router();
 const { datastore, generateId } = require('../datastore');
 
-// GET /api/v1/holdings - List all holdings
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Holding:
+ *       type: object
+ *       properties:
+ *         holdingId:
+ *           type: string
+ *           example: HLD-001
+ *         portfolioId:
+ *           type: string
+ *           example: PRT-001
+ *         securityId:
+ *           type: string
+ *           example: SEC-001
+ *         symbol:
+ *           type: string
+ *           example: AAPL
+ *         quantity:
+ *           type: number
+ *           example: 100
+ *         averageCostBasis:
+ *           type: number
+ *           example: 145.00
+ *         totalCostBasis:
+ *           type: number
+ *           example: 14500.00
+ *         currentPrice:
+ *           type: number
+ *           example: 178.50
+ *         marketValue:
+ *           type: number
+ *           example: 17850.00
+ *         unrealizedGain:
+ *           type: number
+ *           example: 3350.00
+ *         unrealizedGainPercent:
+ *           type: number
+ *           example: 23.10
+ *         weight:
+ *           type: number
+ *           example: 15.5
+ *         acquiredDate:
+ *           type: string
+ *           format: date
+ *           example: 2023-01-15
+ */
+
+/**
+ * @swagger
+ * /holdings:
+ *   get:
+ *     summary: List all holdings
+ *     tags: [Holdings]
+ *     description: Retrieve a list of all holdings across all portfolios
+ *     responses:
+ *       200:
+ *         description: List of holdings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Holding'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 router.get('/', (req, res) => {
   res.json({
     success: true,
@@ -11,7 +85,53 @@ router.get('/', (req, res) => {
   });
 });
 
-// GET /api/v1/holdings/:holdingId - Get holding by ID
+/**
+ * @swagger
+ * /holdings/{holdingId}:
+ *   get:
+ *     summary: Get holding by ID
+ *     tags: [Holdings]
+ *     description: Retrieve detailed information about a specific holding
+ *     parameters:
+ *       - in: path
+ *         name: holdingId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The holding ID
+ *         example: HLD-001
+ *     responses:
+ *       200:
+ *         description: Holding details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Holding'
+ *       404:
+ *         description: Holding not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: object
+ *                   properties:
+ *                     code:
+ *                       type: string
+ *                       example: NOT_FOUND
+ *                     message:
+ *                       type: string
+ *                       example: Holding not found
+ */
 router.get('/:holdingId', (req, res) => {
   const holding = datastore.holdings.find(h => h.holdingId === req.params.holdingId);
   
@@ -33,7 +153,36 @@ router.get('/:holdingId', (req, res) => {
   });
 });
 
-// GET /api/v1/portfolios/:portfolioId/holdings - Get holdings for portfolio
+/**
+ * @swagger
+ * /holdings/portfolio/{portfolioId}:
+ *   get:
+ *     summary: Get holdings for a portfolio
+ *     tags: [Holdings]
+ *     description: Retrieve all holdings within a specific portfolio
+ *     parameters:
+ *       - in: path
+ *         name: portfolioId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The portfolio ID
+ *         example: PRT-001
+ *     responses:
+ *       200:
+ *         description: List of holdings in the portfolio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Holding'
+ */
 router.get('/portfolio/:portfolioId', (req, res) => {
   const holdings = datastore.holdings.filter(h => h.portfolioId === req.params.portfolioId);
   
@@ -44,7 +193,56 @@ router.get('/portfolio/:portfolioId', (req, res) => {
   });
 });
 
-// POST /api/v1/holdings - Create new holding
+/**
+ * @swagger
+ * /holdings:
+ *   post:
+ *     summary: Create a new holding
+ *     tags: [Holdings]
+ *     description: Add a new holding to a portfolio
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - portfolioId
+ *               - securityId
+ *               - quantity
+ *               - averageCostBasis
+ *             properties:
+ *               portfolioId:
+ *                 type: string
+ *                 example: PRT-001
+ *               securityId:
+ *                 type: string
+ *                 example: SEC-001
+ *               quantity:
+ *                 type: number
+ *                 example: 100
+ *               averageCostBasis:
+ *                 type: number
+ *                 example: 145.00
+ *               acquiredDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2023-01-15
+ *     responses:
+ *       201:
+ *         description: Holding created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Holding'
+ *       404:
+ *         description: Security not found
+ */
 router.post('/', (req, res) => {
   // Get security to fetch current price
   const security = datastore.securities.find(s => s.securityId === req.body.securityId);
@@ -101,7 +299,49 @@ router.post('/', (req, res) => {
   });
 });
 
-// PUT /api/v1/holdings/:holdingId - Update holding
+/**
+ * @swagger
+ * /holdings/{holdingId}:
+ *   put:
+ *     summary: Update a holding
+ *     tags: [Holdings]
+ *     description: Update an existing holding's quantity or cost basis
+ *     parameters:
+ *       - in: path
+ *         name: holdingId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The holding ID
+ *         example: HLD-001
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               quantity:
+ *                 type: number
+ *                 example: 150
+ *               averageCostBasis:
+ *                 type: number
+ *                 example: 150.00
+ *     responses:
+ *       200:
+ *         description: Holding updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Holding'
+ *       404:
+ *         description: Holding not found
+ */
 router.put('/:holdingId', (req, res) => {
   const index = datastore.holdings.findIndex(h => h.holdingId === req.params.holdingId);
   
@@ -154,7 +394,36 @@ router.put('/:holdingId', (req, res) => {
   });
 });
 
-// DELETE /api/v1/holdings/:holdingId - Delete holding
+/**
+ * @swagger
+ * /holdings/{holdingId}:
+ *   delete:
+ *     summary: Delete a holding
+ *     tags: [Holdings]
+ *     description: Remove a holding from a portfolio (also deletes related transactions)
+ *     parameters:
+ *       - in: path
+ *         name: holdingId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The holding ID
+ *         example: HLD-001
+ *     responses:
+ *       200:
+ *         description: Holding deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Holding'
+ *       404:
+ *         description: Holding not found
+ */
 router.delete('/:holdingId', (req, res) => {
   const index = datastore.holdings.findIndex(h => h.holdingId === req.params.holdingId);
   
@@ -191,4 +460,3 @@ router.delete('/:holdingId', (req, res) => {
 });
 
 module.exports = router;
-

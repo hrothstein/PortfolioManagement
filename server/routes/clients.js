@@ -5,6 +5,65 @@ const { calculateClientSummary } = require('../services/portfolioService');
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     Client:
+ *       type: object
+ *       properties:
+ *         clientId:
+ *           type: string
+ *           example: CLI-001
+ *         customerId:
+ *           type: string
+ *           example: CUST-001
+ *         firstName:
+ *           type: string
+ *           example: John
+ *         lastName:
+ *           type: string
+ *           example: Smith
+ *         email:
+ *           type: string
+ *           example: john.smith@email.com
+ *         phone:
+ *           type: string
+ *           example: 555-0101
+ *         dateOfBirth:
+ *           type: string
+ *           format: date
+ *           example: 1975-03-15
+ *         riskTolerance:
+ *           type: string
+ *           enum: [CONSERVATIVE, MODERATE, AGGRESSIVE]
+ *           example: MODERATE
+ *         investmentObjective:
+ *           type: string
+ *           enum: [INCOME, GROWTH, BALANCED, PRESERVATION]
+ *           example: GROWTH
+ *         advisorId:
+ *           type: string
+ *           example: ADV-001
+ *         address:
+ *           type: object
+ *           properties:
+ *             street:
+ *               type: string
+ *             city:
+ *               type: string
+ *             state:
+ *               type: string
+ *             zipCode:
+ *               type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ */
+
+/**
+ * @swagger
  * /clients:
  *   get:
  *     summary: List all clients
@@ -16,7 +75,18 @@ const { calculateClientSummary } = require('../services/portfolioService');
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/SuccessResponse'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Client'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
  */
 router.get('/', (req, res) => {
   res.json({
@@ -47,13 +117,31 @@ router.get('/', (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/SuccessResponse'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Client'
  *       404:
  *         description: Client not found
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: object
+ *                   properties:
+ *                     code:
+ *                       type: string
+ *                       example: NOT_FOUND
+ *                     message:
+ *                       type: string
+ *                       example: Client not found
  */
 router.get('/:clientId', (req, res) => {
   const client = datastore.clients.find(c => c.clientId === req.params.clientId);
@@ -111,14 +199,29 @@ router.get('/:clientId', (req, res) => {
  *                       properties:
  *                         totalAccounts:
  *                           type: integer
+ *                           example: 2
  *                         totalPortfolios:
  *                           type: integer
+ *                           example: 3
  *                         totalMarketValue:
  *                           type: number
+ *                           example: 485000.00
+ *                         totalCostBasis:
+ *                           type: number
+ *                           example: 425000.00
  *                         totalUnrealizedGain:
  *                           type: number
+ *                           example: 60000.00
+ *                         totalUnrealizedGainPercent:
+ *                           type: number
+ *                           example: 14.12
  *                         assetAllocation:
  *                           type: object
+ *                           example:
+ *                             STOCK: 65.5
+ *                             BOND: 20.0
+ *                             MUTUAL_FUND: 10.0
+ *                             ETF: 4.5
  *       404:
  *         description: Client not found
  */
@@ -143,7 +246,75 @@ router.get('/:clientId/summary', (req, res) => {
   });
 });
 
-// POST /api/v1/clients - Create new client
+/**
+ * @swagger
+ * /clients:
+ *   post:
+ *     summary: Create a new client
+ *     tags: [Clients]
+ *     description: Add a new client to the system
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - email
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: Jane
+ *               lastName:
+ *                 type: string
+ *                 example: Doe
+ *               email:
+ *                 type: string
+ *                 example: jane.doe@email.com
+ *               phone:
+ *                 type: string
+ *                 example: 555-0199
+ *               dateOfBirth:
+ *                 type: string
+ *                 format: date
+ *                 example: 1985-06-20
+ *               riskTolerance:
+ *                 type: string
+ *                 enum: [CONSERVATIVE, MODERATE, AGGRESSIVE]
+ *                 example: MODERATE
+ *               investmentObjective:
+ *                 type: string
+ *                 enum: [INCOME, GROWTH, BALANCED, PRESERVATION]
+ *                 example: GROWTH
+ *               advisorId:
+ *                 type: string
+ *                 example: ADV-001
+ *               address:
+ *                 type: object
+ *                 properties:
+ *                   street:
+ *                     type: string
+ *                   city:
+ *                     type: string
+ *                   state:
+ *                     type: string
+ *                   zipCode:
+ *                     type: string
+ *     responses:
+ *       201:
+ *         description: Client created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Client'
+ */
 router.post('/', (req, res) => {
   const newClient = {
     clientId: generateId('client'),
@@ -161,7 +332,57 @@ router.post('/', (req, res) => {
   });
 });
 
-// PUT /api/v1/clients/:clientId - Update client
+/**
+ * @swagger
+ * /clients/{clientId}:
+ *   put:
+ *     summary: Update a client
+ *     tags: [Clients]
+ *     description: Update an existing client's information
+ *     parameters:
+ *       - in: path
+ *         name: clientId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The client ID
+ *         example: CLI-001
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               riskTolerance:
+ *                 type: string
+ *                 enum: [CONSERVATIVE, MODERATE, AGGRESSIVE]
+ *               investmentObjective:
+ *                 type: string
+ *                 enum: [INCOME, GROWTH, BALANCED, PRESERVATION]
+ *     responses:
+ *       200:
+ *         description: Client updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Client'
+ *       404:
+ *         description: Client not found
+ */
 router.put('/:clientId', (req, res) => {
   const index = datastore.clients.findIndex(c => c.clientId === req.params.clientId);
   
@@ -190,7 +411,36 @@ router.put('/:clientId', (req, res) => {
   });
 });
 
-// DELETE /api/v1/clients/:clientId - Delete client
+/**
+ * @swagger
+ * /clients/{clientId}:
+ *   delete:
+ *     summary: Delete a client
+ *     tags: [Clients]
+ *     description: Remove a client and all related accounts, portfolios, holdings, and transactions
+ *     parameters:
+ *       - in: path
+ *         name: clientId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The client ID
+ *         example: CLI-001
+ *     responses:
+ *       200:
+ *         description: Client deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Client'
+ *       404:
+ *         description: Client not found
+ */
 router.delete('/:clientId', (req, res) => {
   const index = datastore.clients.findIndex(c => c.clientId === req.params.clientId);
   
@@ -229,4 +479,3 @@ router.delete('/:clientId', (req, res) => {
 });
 
 module.exports = router;
-

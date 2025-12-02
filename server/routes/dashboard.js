@@ -24,6 +24,7 @@ const { datastore } = require('../datastore');
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   example: true
  *                 data:
  *                   type: object
  *                   properties:
@@ -35,15 +36,38 @@ const { datastore } = require('../datastore');
  *                       example: 100
  *                     totalPortfolios:
  *                       type: integer
- *                       example: 120
+ *                       example: 165
  *                     totalAUM:
  *                       type: number
- *                       example: 48500000.00
+ *                       example: 18000000.00
  *                     totalUnrealizedGain:
  *                       type: number
- *                       example: 5250000.00
+ *                       example: 800000.00
+ *                     averagePortfolioSize:
+ *                       type: number
+ *                       example: 109090.91
+ *                     clientsByRiskTolerance:
+ *                       type: object
+ *                       properties:
+ *                         CONSERVATIVE:
+ *                           type: integer
+ *                           example: 15
+ *                         MODERATE:
+ *                           type: integer
+ *                           example: 25
+ *                         AGGRESSIVE:
+ *                           type: integer
+ *                           example: 10
  *                     assetAllocation:
  *                       type: object
+ *                       example:
+ *                         STOCK: 62.5
+ *                         BOND: 22.0
+ *                         MUTUAL_FUND: 8.5
+ *                         ETF: 7.0
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
  */
 router.get('/overview', (req, res) => {
   const overview = calculateDashboardOverview();
@@ -69,9 +93,41 @@ router.get('/overview', (req, res) => {
  *           type: integer
  *           default: 10
  *         description: Number of top performers to return
+ *         example: 5
  *     responses:
  *       200:
  *         description: List of top performing holdings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       holdingId:
+ *                         type: string
+ *                       symbol:
+ *                         type: string
+ *                       securityName:
+ *                         type: string
+ *                       quantity:
+ *                         type: number
+ *                       marketValue:
+ *                         type: number
+ *                       unrealizedGain:
+ *                         type: number
+ *                       unrealizedGainPercent:
+ *                         type: number
+ *                       clientName:
+ *                         type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
  */
 router.get('/top-performers', (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
@@ -84,7 +140,56 @@ router.get('/top-performers', (req, res) => {
   });
 });
 
-// GET /api/v1/dashboard/top-losers - Get worst performing holdings
+/**
+ * @swagger
+ * /dashboard/top-losers:
+ *   get:
+ *     summary: Get worst performing holdings
+ *     tags: [Dashboard]
+ *     description: Retrieve holdings with the lowest (most negative) unrealized gain percentage
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of top losers to return
+ *         example: 5
+ *     responses:
+ *       200:
+ *         description: List of worst performing holdings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       holdingId:
+ *                         type: string
+ *                       symbol:
+ *                         type: string
+ *                       securityName:
+ *                         type: string
+ *                       quantity:
+ *                         type: number
+ *                       marketValue:
+ *                         type: number
+ *                       unrealizedGain:
+ *                         type: number
+ *                       unrealizedGainPercent:
+ *                         type: number
+ *                       clientName:
+ *                         type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 router.get('/top-losers', (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const topLosers = getTopLosers(limit);
@@ -96,7 +201,60 @@ router.get('/top-losers', (req, res) => {
   });
 });
 
-// GET /api/v1/dashboard/recent-transactions - Get recent transactions
+/**
+ * @swagger
+ * /dashboard/recent-transactions:
+ *   get:
+ *     summary: Get recent transactions
+ *     tags: [Dashboard]
+ *     description: Retrieve the most recent transactions across all portfolios, enriched with security and client names
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Number of recent transactions to return
+ *         example: 10
+ *     responses:
+ *       200:
+ *         description: List of recent transactions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       transactionId:
+ *                         type: string
+ *                       portfolioId:
+ *                         type: string
+ *                       symbol:
+ *                         type: string
+ *                       securityName:
+ *                         type: string
+ *                       transactionType:
+ *                         type: string
+ *                         enum: [BUY, SELL, DIVIDEND]
+ *                       quantity:
+ *                         type: number
+ *                       totalAmount:
+ *                         type: number
+ *                       transactionDate:
+ *                         type: string
+ *                         format: date-time
+ *                       clientName:
+ *                         type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 router.get('/recent-transactions', (req, res) => {
   const limit = parseInt(req.query.limit) || 20;
   
@@ -122,7 +280,37 @@ router.get('/recent-transactions', (req, res) => {
   });
 });
 
-// GET /api/v1/dashboard/allocation - Get aggregate asset allocation
+/**
+ * @swagger
+ * /dashboard/allocation:
+ *   get:
+ *     summary: Get aggregate asset allocation
+ *     tags: [Dashboard]
+ *     description: Retrieve the overall asset allocation across all portfolios
+ *     responses:
+ *       200:
+ *         description: Aggregate asset allocation percentages
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     assetAllocation:
+ *                       type: object
+ *                       example:
+ *                         STOCK: 62.5
+ *                         BOND: 22.0
+ *                         MUTUAL_FUND: 8.5
+ *                         ETF: 7.0
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 router.get('/allocation', (req, res) => {
   const overview = calculateDashboardOverview();
   
@@ -136,4 +324,3 @@ router.get('/allocation', (req, res) => {
 });
 
 module.exports = router;
-

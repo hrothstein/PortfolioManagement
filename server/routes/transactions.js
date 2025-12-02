@@ -2,7 +2,117 @@ const express = require('express');
 const router = express.Router();
 const { datastore, generateId } = require('../datastore');
 
-// GET /api/v1/transactions - List all transactions with optional filters
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Transaction:
+ *       type: object
+ *       properties:
+ *         transactionId:
+ *           type: string
+ *           example: TXN-001
+ *         portfolioId:
+ *           type: string
+ *           example: PRT-001
+ *         holdingId:
+ *           type: string
+ *           example: HLD-001
+ *         securityId:
+ *           type: string
+ *           example: SEC-001
+ *         symbol:
+ *           type: string
+ *           example: AAPL
+ *         transactionType:
+ *           type: string
+ *           enum: [BUY, SELL, DIVIDEND, TRANSFER_IN, TRANSFER_OUT, FEE]
+ *           example: BUY
+ *         quantity:
+ *           type: number
+ *           example: 50
+ *         pricePerUnit:
+ *           type: number
+ *           example: 145.00
+ *         totalAmount:
+ *           type: number
+ *           example: 7250.00
+ *         fees:
+ *           type: number
+ *           example: 0.00
+ *         netAmount:
+ *           type: number
+ *           example: 7250.00
+ *         transactionDate:
+ *           type: string
+ *           format: date-time
+ *           example: 2023-01-15T10:30:00Z
+ *         settlementDate:
+ *           type: string
+ *           format: date-time
+ *           example: 2023-01-18T00:00:00Z
+ *         status:
+ *           type: string
+ *           enum: [PENDING, SETTLED, CANCELLED]
+ *           example: SETTLED
+ *         notes:
+ *           type: string
+ *           example: Initial position
+ */
+
+/**
+ * @swagger
+ * /transactions:
+ *   get:
+ *     summary: List all transactions
+ *     tags: [Transactions]
+ *     description: Retrieve a list of all transactions with optional filters
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter by start date
+ *         example: 2023-01-01
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter by end date
+ *         example: 2024-12-31
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [BUY, SELL, DIVIDEND, TRANSFER_IN, TRANSFER_OUT, FEE]
+ *         description: Filter by transaction type
+ *       - in: query
+ *         name: symbol
+ *         schema:
+ *           type: string
+ *         description: Filter by security symbol
+ *         example: AAPL
+ *     responses:
+ *       200:
+ *         description: List of transactions (sorted by date descending)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Transaction'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 router.get('/', (req, res) => {
   let transactions = [...datastore.transactions];
   
@@ -34,7 +144,53 @@ router.get('/', (req, res) => {
   });
 });
 
-// GET /api/v1/transactions/:transactionId - Get transaction by ID
+/**
+ * @swagger
+ * /transactions/{transactionId}:
+ *   get:
+ *     summary: Get transaction by ID
+ *     tags: [Transactions]
+ *     description: Retrieve detailed information about a specific transaction
+ *     parameters:
+ *       - in: path
+ *         name: transactionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The transaction ID
+ *         example: TXN-001
+ *     responses:
+ *       200:
+ *         description: Transaction details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Transaction'
+ *       404:
+ *         description: Transaction not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: object
+ *                   properties:
+ *                     code:
+ *                       type: string
+ *                       example: NOT_FOUND
+ *                     message:
+ *                       type: string
+ *                       example: Transaction not found
+ */
 router.get('/:transactionId', (req, res) => {
   const transaction = datastore.transactions.find(t => t.transactionId === req.params.transactionId);
   
@@ -56,7 +212,36 @@ router.get('/:transactionId', (req, res) => {
   });
 });
 
-// GET /api/v1/portfolios/:portfolioId/transactions - Get transactions for portfolio
+/**
+ * @swagger
+ * /transactions/portfolio/{portfolioId}:
+ *   get:
+ *     summary: Get transactions for a portfolio
+ *     tags: [Transactions]
+ *     description: Retrieve all transactions within a specific portfolio (sorted by date descending)
+ *     parameters:
+ *       - in: path
+ *         name: portfolioId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The portfolio ID
+ *         example: PRT-001
+ *     responses:
+ *       200:
+ *         description: List of transactions in the portfolio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Transaction'
+ */
 router.get('/portfolio/:portfolioId', (req, res) => {
   const transactions = datastore.transactions
     .filter(t => t.portfolioId === req.params.portfolioId)
@@ -69,7 +254,74 @@ router.get('/portfolio/:portfolioId', (req, res) => {
   });
 });
 
-// POST /api/v1/transactions - Create new transaction
+/**
+ * @swagger
+ * /transactions:
+ *   post:
+ *     summary: Create a new transaction
+ *     tags: [Transactions]
+ *     description: Record a new transaction (BUY, SELL, DIVIDEND, etc.)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - portfolioId
+ *               - securityId
+ *               - symbol
+ *               - transactionType
+ *               - totalAmount
+ *             properties:
+ *               portfolioId:
+ *                 type: string
+ *                 example: PRT-001
+ *               holdingId:
+ *                 type: string
+ *                 example: HLD-001
+ *               securityId:
+ *                 type: string
+ *                 example: SEC-001
+ *               symbol:
+ *                 type: string
+ *                 example: AAPL
+ *               transactionType:
+ *                 type: string
+ *                 enum: [BUY, SELL, DIVIDEND, TRANSFER_IN, TRANSFER_OUT, FEE]
+ *                 example: BUY
+ *               quantity:
+ *                 type: number
+ *                 example: 50
+ *               pricePerUnit:
+ *                 type: number
+ *                 example: 145.00
+ *               totalAmount:
+ *                 type: number
+ *                 example: 7250.00
+ *               fees:
+ *                 type: number
+ *                 example: 0.00
+ *               transactionDate:
+ *                 type: string
+ *                 format: date-time
+ *                 example: 2024-01-15T10:30:00Z
+ *               notes:
+ *                 type: string
+ *                 example: Adding to position
+ *     responses:
+ *       201:
+ *         description: Transaction created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Transaction'
+ */
 router.post('/', (req, res) => {
   const settlementDate = req.body.settlementDate || 
     new Date(new Date(req.body.transactionDate).getTime() + 3 * 24 * 60 * 60 * 1000).toISOString();
@@ -102,7 +354,48 @@ router.post('/', (req, res) => {
   });
 });
 
-// PUT /api/v1/transactions/:transactionId - Update transaction
+/**
+ * @swagger
+ * /transactions/{transactionId}:
+ *   put:
+ *     summary: Update a transaction
+ *     tags: [Transactions]
+ *     description: Update an existing transaction's details
+ *     parameters:
+ *       - in: path
+ *         name: transactionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The transaction ID
+ *         example: TXN-001
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [PENDING, SETTLED, CANCELLED]
+ *               notes:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Transaction updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Transaction'
+ *       404:
+ *         description: Transaction not found
+ */
 router.put('/:transactionId', (req, res) => {
   const index = datastore.transactions.findIndex(t => t.transactionId === req.params.transactionId);
   
@@ -130,7 +423,36 @@ router.put('/:transactionId', (req, res) => {
   });
 });
 
-// DELETE /api/v1/transactions/:transactionId - Delete transaction
+/**
+ * @swagger
+ * /transactions/{transactionId}:
+ *   delete:
+ *     summary: Delete a transaction
+ *     tags: [Transactions]
+ *     description: Remove a transaction from the system
+ *     parameters:
+ *       - in: path
+ *         name: transactionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The transaction ID
+ *         example: TXN-001
+ *     responses:
+ *       200:
+ *         description: Transaction deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Transaction'
+ *       404:
+ *         description: Transaction not found
+ */
 router.delete('/:transactionId', (req, res) => {
   const index = datastore.transactions.findIndex(t => t.transactionId === req.params.transactionId);
   
@@ -155,4 +477,3 @@ router.delete('/:transactionId', (req, res) => {
 });
 
 module.exports = router;
-
