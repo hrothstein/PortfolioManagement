@@ -1,0 +1,280 @@
+openapi: 3.0.0
+info:
+  title: Portfolio Management System - Securities API
+  version: 1.2.1
+  description: |
+    RESTful API for managing securities and market data.
+    
+    Supports security types: STOCK, BOND, MUTUAL_FUND, ETF
+  contact:
+    name: API Support
+    email: support@portfoliomgmt.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://portfolio-mgmt-system-997b2c07833c.herokuapp.com/api/v1
+    description: Production server
+  - url: http://localhost:3001/api/v1
+    description: Development server
+
+tags:
+  - name: Securities
+    description: Securities and market data endpoints
+
+paths:
+  /securities:
+    get:
+      summary: List all securities
+      description: Retrieve a list of all securities with current market data
+      operationId: getSecurities
+      tags:
+        - Securities
+      parameters:
+        - name: parameter
+          in: query
+          required: false
+          description: Optional query parameter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of securities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Security'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /securities/{securityId}:
+    get:
+      summary: Get security by ID
+      description: Retrieve detailed information about a specific security
+      operationId: getSecurityById
+      tags:
+        - Securities
+      parameters:
+        - $ref: '#/components/parameters/securityId'
+      responses:
+        '200':
+          description: Security details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Security'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update security price
+      description: Update a security's price (for demo purposes). This also updates all holdings with this security.
+      operationId: updateSecurity
+      tags:
+        - Securities
+      parameters:
+        - $ref: '#/components/parameters/securityId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPrice:
+                  type: number
+                  description: New current price
+                  example: 185.00
+      responses:
+        '200':
+          description: Security updated successfully (holdings are also recalculated)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Security'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /securities/symbol/{symbol}:
+    get:
+      summary: Get security by symbol
+      description: Retrieve security information by ticker symbol
+      operationId: getSecurityBySymbol
+      tags:
+        - Securities
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          description: The ticker symbol
+          schema:
+            type: string
+          example: AAPL
+      responses:
+        '200':
+          description: Security details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Security'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /securities/type/{type}:
+    get:
+      summary: Get securities by type
+      description: Retrieve all securities of a specific type
+      operationId: getSecuritiesByType
+      tags:
+        - Securities
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: The security type
+          schema:
+            type: string
+            enum: [STOCK, BOND, MUTUAL_FUND, ETF]
+          example: STOCK
+      responses:
+        '200':
+          description: List of securities of the specified type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Security'
+
+components:
+  parameters:
+    securityId:
+      name: securityId
+      in: path
+      required: true
+      description: Unique identifier for the security
+      schema:
+        type: string
+      example: SEC-001
+
+  schemas:
+    Security:
+      type: object
+      properties:
+        securityId:
+          type: string
+          example: SEC-001
+        symbol:
+          type: string
+          example: AAPL
+        securityName:
+          type: string
+          example: Apple Inc.
+        securityType:
+          type: string
+          enum: [STOCK, BOND, MUTUAL_FUND, ETF]
+          example: STOCK
+        sector:
+          type: string
+          example: TECHNOLOGY
+        currentPrice:
+          type: number
+          example: 178.50
+        previousClose:
+          type: number
+          example: 177.25
+        dayChange:
+          type: number
+          example: 1.25
+        dayChangePercent:
+          type: number
+          example: 0.71
+        fiftyTwoWeekHigh:
+          type: number
+          example: 199.62
+        fiftyTwoWeekLow:
+          type: number
+          example: 124.17
+        dividendYield:
+          type: number
+          example: 0.55
+        peRatio:
+          type: number
+          example: 28.5
+        marketCap:
+          type: number
+          example: 2850000000000
+        bondRating:
+          type: string
+          nullable: true
+        maturityDate:
+          type: string
+          format: date
+          nullable: true
+        couponRate:
+          type: number
+          nullable: true
+        expenseRatio:
+          type: number
+          nullable: true
+        lastUpdated:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: NOT_FOUND
+            message:
+              type: string
+              example: Security not found
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+

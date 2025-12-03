@@ -1,0 +1,305 @@
+openapi: 3.0.0
+info:
+  title: Portfolio Management System - Dashboard API
+  version: 1.2.1
+  description: |
+    RESTful API for dashboard and analytics endpoints.
+    
+    Provides system-wide metrics, top performers/losers, and recent activity.
+  contact:
+    name: API Support
+    email: support@portfoliomgmt.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://portfolio-mgmt-system-997b2c07833c.herokuapp.com/api/v1
+    description: Production server
+  - url: http://localhost:3001/api/v1
+    description: Development server
+
+tags:
+  - name: Dashboard
+    description: Dashboard and analytics endpoints
+
+paths:
+  /dashboard/overview:
+    get:
+      summary: Get system-wide dashboard overview
+      description: |
+        Retrieve comprehensive system metrics including:
+        - Total AUM and client counts
+        - Asset allocation breakdown
+        - Risk tolerance distribution
+      operationId: getDashboardOverview
+      tags:
+        - Dashboard
+      parameters:
+        - name: parameter
+          in: query
+          required: false
+          description: Optional query parameter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dashboard overview data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/DashboardOverview'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /dashboard/top-performers:
+    get:
+      summary: Get top performing holdings
+      description: Retrieve holdings with the highest unrealized gain percentage
+      operationId: getTopPerformers
+      tags:
+        - Dashboard
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of top performers to return
+          schema:
+            type: integer
+            default: 10
+          example: 5
+      responses:
+        '200':
+          description: List of top performing holdings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PerformingHolding'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /dashboard/top-losers:
+    get:
+      summary: Get worst performing holdings
+      description: Retrieve holdings with the lowest (most negative) unrealized gain percentage
+      operationId: getTopLosers
+      tags:
+        - Dashboard
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of top losers to return
+          schema:
+            type: integer
+            default: 10
+          example: 5
+      responses:
+        '200':
+          description: List of worst performing holdings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PerformingHolding'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /dashboard/recent-transactions:
+    get:
+      summary: Get recent transactions
+      description: Retrieve the most recent transactions across all portfolios
+      operationId: getRecentTransactions
+      tags:
+        - Dashboard
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of recent transactions to return
+          schema:
+            type: integer
+            default: 20
+          example: 10
+      responses:
+        '200':
+          description: List of recent transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RecentTransaction'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /dashboard/allocation:
+    get:
+      summary: Get aggregate asset allocation
+      description: Retrieve the overall asset allocation across all portfolios
+      operationId: getAssetAllocation
+      tags:
+        - Dashboard
+      parameters:
+        - name: parameter
+          in: query
+          required: false
+          description: Optional query parameter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Aggregate asset allocation percentages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      assetAllocation:
+                        type: object
+                        example:
+                          STOCK: 62.5
+                          BOND: 22.0
+                          MUTUAL_FUND: 8.5
+                          ETF: 7.0
+                  timestamp:
+                    type: string
+                    format: date-time
+
+components:
+  schemas:
+    DashboardOverview:
+      type: object
+      properties:
+        totalClients:
+          type: integer
+          example: 50
+        totalAccounts:
+          type: integer
+          example: 100
+        totalPortfolios:
+          type: integer
+          example: 165
+        totalAUM:
+          type: number
+          example: 18000000.00
+        totalUnrealizedGain:
+          type: number
+          example: 800000.00
+        averagePortfolioSize:
+          type: number
+          example: 109090.91
+        clientsByRiskTolerance:
+          type: object
+          properties:
+            CONSERVATIVE:
+              type: integer
+              example: 15
+            MODERATE:
+              type: integer
+              example: 25
+            AGGRESSIVE:
+              type: integer
+              example: 10
+        assetAllocation:
+          type: object
+          example:
+            STOCK: 62.5
+            BOND: 22.0
+            MUTUAL_FUND: 8.5
+            ETF: 7.0
+
+    PerformingHolding:
+      type: object
+      properties:
+        holdingId:
+          type: string
+          example: HLD-001
+        symbol:
+          type: string
+          example: AAPL
+        securityName:
+          type: string
+          example: Apple Inc.
+        quantity:
+          type: number
+          example: 100
+        marketValue:
+          type: number
+          example: 17850.00
+        unrealizedGain:
+          type: number
+          example: 3350.00
+        unrealizedGainPercent:
+          type: number
+          example: 23.10
+        clientName:
+          type: string
+          example: John Smith
+
+    RecentTransaction:
+      type: object
+      properties:
+        transactionId:
+          type: string
+          example: TXN-001
+        portfolioId:
+          type: string
+          example: PRT-001
+        symbol:
+          type: string
+          example: AAPL
+        securityName:
+          type: string
+          example: Apple Inc.
+        transactionType:
+          type: string
+          enum: [BUY, SELL, DIVIDEND]
+          example: BUY
+        quantity:
+          type: number
+          example: 50
+        totalAmount:
+          type: number
+          example: 7250.00
+        transactionDate:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        clientName:
+          type: string
+          example: John Smith
+

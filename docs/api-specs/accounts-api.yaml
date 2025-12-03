@@ -1,0 +1,310 @@
+openapi: 3.0.0
+info:
+  title: Portfolio Management System - Accounts API
+  version: 1.2.1
+  description: |
+    RESTful API for managing investment accounts.
+    
+    Supports account types: BROKERAGE, IRA, ROTH_IRA, 401K
+  contact:
+    name: API Support
+    email: support@portfoliomgmt.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://portfolio-mgmt-system-997b2c07833c.herokuapp.com/api/v1
+    description: Production server
+  - url: http://localhost:3001/api/v1
+    description: Development server
+
+tags:
+  - name: Accounts
+    description: Account management endpoints
+
+paths:
+  /accounts:
+    get:
+      summary: List all accounts
+      description: Retrieve a list of all accounts across all clients
+      operationId: getAccounts
+      tags:
+        - Accounts
+      parameters:
+        - name: parameter
+          in: query
+          required: false
+          description: Optional query parameter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of accounts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Account'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+    post:
+      summary: Create a new account
+      description: Create a new account for a client
+      operationId: createAccount
+      tags:
+        - Accounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCreate'
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Account'
+
+  /accounts/{accountId}:
+    get:
+      summary: Get account by ID
+      description: Retrieve detailed information about a specific account
+      operationId: getAccountById
+      tags:
+        - Accounts
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+      responses:
+        '200':
+          description: Account details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Account'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update an account
+      description: Update an existing account's details
+      operationId: updateAccount
+      tags:
+        - Accounts
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountUpdate'
+      responses:
+        '200':
+          description: Account updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Account'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete an account
+      description: Delete an account and all related portfolios, holdings, and transactions
+      operationId: deleteAccount
+      tags:
+        - Accounts
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+      responses:
+        '200':
+          description: Account deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Account'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /accounts/client/{clientId}:
+    get:
+      summary: Get accounts for a client
+      description: Retrieve all accounts belonging to a specific client
+      operationId: getAccountsByClient
+      tags:
+        - Accounts
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: The client ID
+          schema:
+            type: string
+          example: CLI-001
+      responses:
+        '200':
+          description: List of client accounts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Account'
+
+components:
+  parameters:
+    accountId:
+      name: accountId
+      in: path
+      required: true
+      description: Unique identifier for the account
+      schema:
+        type: string
+      example: ACC-001
+
+  schemas:
+    Account:
+      type: object
+      properties:
+        accountId:
+          type: string
+          example: ACC-001
+        clientId:
+          type: string
+          example: CLI-001
+        accountType:
+          type: string
+          enum: [BROKERAGE, IRA, ROTH_IRA, 401K]
+          example: BROKERAGE
+        accountNumber:
+          type: string
+          example: BRK-78945612
+        accountName:
+          type: string
+          example: John Smith Brokerage
+        accountStatus:
+          type: string
+          enum: [ACTIVE, INACTIVE, CLOSED]
+          example: ACTIVE
+        openDate:
+          type: string
+          format: date
+          example: "2020-06-15"
+        cashBalance:
+          type: number
+          example: 15000.00
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AccountCreate:
+      type: object
+      required:
+        - clientId
+        - accountType
+        - accountNumber
+        - accountName
+      properties:
+        clientId:
+          type: string
+          example: CLI-001
+        accountType:
+          type: string
+          enum: [BROKERAGE, IRA, ROTH_IRA, 401K]
+          example: BROKERAGE
+        accountNumber:
+          type: string
+          example: BRK-12345678
+        accountName:
+          type: string
+          example: My Brokerage Account
+        accountStatus:
+          type: string
+          enum: [ACTIVE, INACTIVE, CLOSED]
+          example: ACTIVE
+        openDate:
+          type: string
+          format: date
+          example: "2024-01-15"
+        cashBalance:
+          type: number
+          example: 10000.00
+
+    AccountUpdate:
+      type: object
+      properties:
+        accountName:
+          type: string
+        accountStatus:
+          type: string
+          enum: [ACTIVE, INACTIVE, CLOSED]
+        cashBalance:
+          type: number
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: NOT_FOUND
+            message:
+              type: string
+              example: Account not found
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+

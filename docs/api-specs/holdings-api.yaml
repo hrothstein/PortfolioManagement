@@ -1,0 +1,320 @@
+openapi: 3.0.0
+info:
+  title: Portfolio Management System - Holdings API
+  version: 1.2.1
+  description: |
+    RESTful API for managing portfolio holdings.
+    
+    Track individual security positions with cost basis, market value, and gain/loss.
+  contact:
+    name: API Support
+    email: support@portfoliomgmt.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://portfolio-mgmt-system-997b2c07833c.herokuapp.com/api/v1
+    description: Production server
+  - url: http://localhost:3001/api/v1
+    description: Development server
+
+tags:
+  - name: Holdings
+    description: Holdings management endpoints
+
+paths:
+  /holdings:
+    get:
+      summary: List all holdings
+      description: Retrieve a list of all holdings across all portfolios
+      operationId: getHoldings
+      tags:
+        - Holdings
+      parameters:
+        - name: parameter
+          in: query
+          required: false
+          description: Optional query parameter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of holdings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Holding'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+    post:
+      summary: Create a new holding
+      description: Add a new holding to a portfolio
+      operationId: createHolding
+      tags:
+        - Holdings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HoldingCreate'
+      responses:
+        '201':
+          description: Holding created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Holding'
+        '404':
+          description: Security not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /holdings/{holdingId}:
+    get:
+      summary: Get holding by ID
+      description: Retrieve detailed information about a specific holding
+      operationId: getHoldingById
+      tags:
+        - Holdings
+      parameters:
+        - $ref: '#/components/parameters/holdingId'
+      responses:
+        '200':
+          description: Holding details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Holding'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update a holding
+      description: Update an existing holding's quantity or cost basis
+      operationId: updateHolding
+      tags:
+        - Holdings
+      parameters:
+        - $ref: '#/components/parameters/holdingId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HoldingUpdate'
+      responses:
+        '200':
+          description: Holding updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Holding'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete a holding
+      description: Remove a holding from a portfolio (also deletes related transactions)
+      operationId: deleteHolding
+      tags:
+        - Holdings
+      parameters:
+        - $ref: '#/components/parameters/holdingId'
+      responses:
+        '200':
+          description: Holding deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Holding'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /holdings/portfolio/{portfolioId}:
+    get:
+      summary: Get holdings for a portfolio
+      description: Retrieve all holdings within a specific portfolio
+      operationId: getHoldingsByPortfolio
+      tags:
+        - Holdings
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          description: The portfolio ID
+          schema:
+            type: string
+          example: PRT-001
+      responses:
+        '200':
+          description: List of holdings in the portfolio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Holding'
+
+components:
+  parameters:
+    holdingId:
+      name: holdingId
+      in: path
+      required: true
+      description: Unique identifier for the holding
+      schema:
+        type: string
+      example: HLD-001
+
+  schemas:
+    Holding:
+      type: object
+      properties:
+        holdingId:
+          type: string
+          example: HLD-001
+        portfolioId:
+          type: string
+          example: PRT-001
+        securityId:
+          type: string
+          example: SEC-001
+        symbol:
+          type: string
+          example: AAPL
+        quantity:
+          type: number
+          example: 100
+        averageCostBasis:
+          type: number
+          example: 145.00
+        totalCostBasis:
+          type: number
+          example: 14500.00
+        currentPrice:
+          type: number
+          example: 178.50
+        marketValue:
+          type: number
+          example: 17850.00
+        unrealizedGain:
+          type: number
+          example: 3350.00
+        unrealizedGainPercent:
+          type: number
+          example: 23.10
+        weight:
+          type: number
+          example: 15.5
+        acquiredDate:
+          type: string
+          format: date
+          example: "2023-01-15"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    HoldingCreate:
+      type: object
+      required:
+        - portfolioId
+        - securityId
+        - quantity
+        - averageCostBasis
+      properties:
+        portfolioId:
+          type: string
+          example: PRT-001
+        securityId:
+          type: string
+          example: SEC-001
+        quantity:
+          type: number
+          example: 100
+        averageCostBasis:
+          type: number
+          example: 145.00
+        acquiredDate:
+          type: string
+          format: date
+          example: "2023-01-15"
+
+    HoldingUpdate:
+      type: object
+      properties:
+        quantity:
+          type: number
+          example: 150
+        averageCostBasis:
+          type: number
+          example: 150.00
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: NOT_FOUND
+            message:
+              type: string
+              example: Holding not found
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+

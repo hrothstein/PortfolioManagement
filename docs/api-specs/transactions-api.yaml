@@ -1,0 +1,364 @@
+openapi: 3.0.0
+info:
+  title: Portfolio Management System - Transactions API
+  version: 1.2.1
+  description: |
+    RESTful API for managing portfolio transactions.
+    
+    Supports transaction types: BUY, SELL, DIVIDEND, TRANSFER_IN, TRANSFER_OUT, FEE
+  contact:
+    name: API Support
+    email: support@portfoliomgmt.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://portfolio-mgmt-system-997b2c07833c.herokuapp.com/api/v1
+    description: Production server
+  - url: http://localhost:3001/api/v1
+    description: Development server
+
+tags:
+  - name: Transactions
+    description: Transaction management endpoints
+
+paths:
+  /transactions:
+    get:
+      summary: List all transactions
+      description: Retrieve a list of all transactions with optional filters
+      operationId: getTransactions
+      tags:
+        - Transactions
+      parameters:
+        - name: startDate
+          in: query
+          required: false
+          description: Filter by start date
+          schema:
+            type: string
+            format: date
+          example: "2023-01-01"
+        - name: endDate
+          in: query
+          required: false
+          description: Filter by end date
+          schema:
+            type: string
+            format: date
+          example: "2024-12-31"
+        - name: type
+          in: query
+          required: false
+          description: Filter by transaction type
+          schema:
+            type: string
+            enum: [BUY, SELL, DIVIDEND, TRANSFER_IN, TRANSFER_OUT, FEE]
+        - name: symbol
+          in: query
+          required: false
+          description: Filter by security symbol
+          schema:
+            type: string
+          example: AAPL
+      responses:
+        '200':
+          description: List of transactions (sorted by date descending)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                  timestamp:
+                    type: string
+                    format: date-time
+
+    post:
+      summary: Create a new transaction
+      description: Record a new transaction (BUY, SELL, DIVIDEND, etc.)
+      operationId: createTransaction
+      tags:
+        - Transactions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionCreate'
+      responses:
+        '201':
+          description: Transaction created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+
+  /transactions/{transactionId}:
+    get:
+      summary: Get transaction by ID
+      description: Retrieve detailed information about a specific transaction
+      operationId: getTransactionById
+      tags:
+        - Transactions
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+      responses:
+        '200':
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update a transaction
+      description: Update an existing transaction's details
+      operationId: updateTransaction
+      tags:
+        - Transactions
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionUpdate'
+      responses:
+        '200':
+          description: Transaction updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete a transaction
+      description: Remove a transaction from the system
+      operationId: deleteTransaction
+      tags:
+        - Transactions
+      parameters:
+        - $ref: '#/components/parameters/transactionId'
+      responses:
+        '200':
+          description: Transaction deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /transactions/portfolio/{portfolioId}:
+    get:
+      summary: Get transactions for a portfolio
+      description: Retrieve all transactions within a specific portfolio (sorted by date descending)
+      operationId: getTransactionsByPortfolio
+      tags:
+        - Transactions
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          description: The portfolio ID
+          schema:
+            type: string
+          example: PRT-001
+      responses:
+        '200':
+          description: List of transactions in the portfolio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+
+components:
+  parameters:
+    transactionId:
+      name: transactionId
+      in: path
+      required: true
+      description: Unique identifier for the transaction
+      schema:
+        type: string
+      example: TXN-001
+
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        transactionId:
+          type: string
+          example: TXN-001
+        portfolioId:
+          type: string
+          example: PRT-001
+        holdingId:
+          type: string
+          nullable: true
+          example: HLD-001
+        securityId:
+          type: string
+          example: SEC-001
+        symbol:
+          type: string
+          example: AAPL
+        transactionType:
+          type: string
+          enum: [BUY, SELL, DIVIDEND, TRANSFER_IN, TRANSFER_OUT, FEE]
+          example: BUY
+        quantity:
+          type: number
+          example: 50
+        pricePerUnit:
+          type: number
+          example: 145.00
+        totalAmount:
+          type: number
+          example: 7250.00
+        fees:
+          type: number
+          example: 0.00
+        netAmount:
+          type: number
+          example: 7250.00
+        transactionDate:
+          type: string
+          format: date-time
+          example: "2023-01-15T10:30:00Z"
+        settlementDate:
+          type: string
+          format: date-time
+          example: "2023-01-18T00:00:00Z"
+        status:
+          type: string
+          enum: [PENDING, SETTLED, CANCELLED]
+          example: SETTLED
+        notes:
+          type: string
+          example: Initial position
+        createdAt:
+          type: string
+          format: date-time
+
+    TransactionCreate:
+      type: object
+      required:
+        - portfolioId
+        - securityId
+        - symbol
+        - transactionType
+        - totalAmount
+      properties:
+        portfolioId:
+          type: string
+          example: PRT-001
+        holdingId:
+          type: string
+          example: HLD-001
+        securityId:
+          type: string
+          example: SEC-001
+        symbol:
+          type: string
+          example: AAPL
+        transactionType:
+          type: string
+          enum: [BUY, SELL, DIVIDEND, TRANSFER_IN, TRANSFER_OUT, FEE]
+          example: BUY
+        quantity:
+          type: number
+          example: 50
+        pricePerUnit:
+          type: number
+          example: 145.00
+        totalAmount:
+          type: number
+          example: 7250.00
+        fees:
+          type: number
+          example: 0.00
+        transactionDate:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        notes:
+          type: string
+          example: Adding to position
+
+    TransactionUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [PENDING, SETTLED, CANCELLED]
+        notes:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: NOT_FOUND
+            message:
+              type: string
+              example: Transaction not found
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
