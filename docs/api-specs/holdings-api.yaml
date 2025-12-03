@@ -1,10 +1,9 @@
 openapi: 3.0.0
 info:
-  title: Portfolio Management System - Holdings API
+  title: Holdings API
   version: 1.2.1
   description: |
     RESTful API for managing portfolio holdings.
-    
     Track individual security positions with cost basis, market value, and gain/loss.
   contact:
     name: API Support
@@ -223,27 +222,35 @@ components:
           example: AAPL
         quantity:
           type: number
+          format: double
           example: 100
         averageCostBasis:
           type: number
+          format: double
           example: 145.00
         totalCostBasis:
           type: number
+          format: double
           example: 14500.00
         currentPrice:
           type: number
+          format: double
           example: 178.50
         marketValue:
           type: number
+          format: double
           example: 17850.00
         unrealizedGain:
           type: number
+          format: double
           example: 3350.00
         unrealizedGainPercent:
           type: number
+          format: double
           example: 23.10
         weight:
           type: number
+          format: double
           example: 15.5
         acquiredDate:
           type: string
@@ -272,9 +279,11 @@ components:
           example: SEC-001
         quantity:
           type: number
+          format: double
           example: 100
         averageCostBasis:
           type: number
+          format: double
           example: 145.00
         acquiredDate:
           type: string
@@ -286,9 +295,11 @@ components:
       properties:
         quantity:
           type: number
+          format: double
           example: 150
         averageCostBasis:
           type: number
+          format: double
           example: 150.00
 
     Error:
@@ -317,4 +328,3 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-
