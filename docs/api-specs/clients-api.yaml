@@ -132,6 +132,12 @@ paths:
         - Clients
       parameters:
         - $ref: '#/components/parameters/clientId'
+        - name: parameter
+          in: query
+          required: false
+          description: Optional query parameter
+          schema:
+            type: string
       responses:
         '200':
           description: Client details retrieved successfully
@@ -236,6 +242,12 @@ paths:
         - Clients
       parameters:
         - $ref: '#/components/parameters/clientId'
+        - name: parameter
+          in: query
+          required: false
+          description: Optional query parameter
+          schema:
+            type: string
       responses:
         '200':
           description: Client summary retrieved successfully
