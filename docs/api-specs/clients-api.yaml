@@ -35,17 +35,12 @@ paths:
       tags:
         - Clients
       parameters:
-        - name: riskTolerance
+        - name: parameter
           in: query
           required: false
-          description: Filter clients by risk tolerance level
+          description: Optional query parameter
           schema:
             type: string
-            enum:
-              - CONSERVATIVE
-              - MODERATE
-              - AGGRESSIVE
-          example: MODERATE
       responses:
         '200':
           description: List of clients retrieved successfully
@@ -132,12 +127,6 @@ paths:
         - Clients
       parameters:
         - $ref: '#/components/parameters/clientId'
-        - name: parameter
-          in: query
-          required: false
-          description: Optional query parameter
-          schema:
-            type: string
       responses:
         '200':
           description: Client details retrieved successfully
@@ -242,12 +231,6 @@ paths:
         - Clients
       parameters:
         - $ref: '#/components/parameters/clientId'
-        - name: parameter
-          in: query
-          required: false
-          description: Optional query parameter
-          schema:
-            type: string
       responses:
         '200':
           description: Client summary retrieved successfully
