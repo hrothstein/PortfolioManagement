@@ -1,16 +1,11 @@
 openapi: 3.0.0
 info:
   title: Holdings API
-  version: 1.2.1
-  description: |
-    RESTful API for managing portfolio holdings.
-    Track individual security positions with cost basis, market value, and gain/loss.
+  version: 1.0.0
+  description: RESTful API for managing portfolio holdings. Track individual security positions with cost basis, market value, and gain/loss.
   contact:
     name: API Support
     email: support@portfoliomgmt.com
-  license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
 
 servers:
   - url: https://portfolio-mgmt-system-997b2c07833c.herokuapp.com/api/v1
