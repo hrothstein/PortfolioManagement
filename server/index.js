@@ -5,6 +5,7 @@ const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger');
 const { seedData } = require('./seed');
+const { createMCPRouter } = require('./mcp');
 
 // Create Express app
 const app = express();
@@ -39,6 +40,9 @@ app.use('/api/v1/holdings', holdingsRouter);
 app.use('/api/v1/transactions', transactionsRouter);
 app.use('/api/v1/securities', securitiesRouter);
 app.use('/api/v1/dashboard', dashboardRouter);
+
+// MCP Server Routes (Model Context Protocol for AI agents)
+app.use('/mcp', createMCPRouter(express));
 
 // Serve static files from React app in production
 if (process.env.NODE_ENV === 'production') {
@@ -91,6 +95,7 @@ app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
   console.log(`📊 API available at http://localhost:${PORT}/api/v1`);
   console.log(`📚 Swagger Docs: http://localhost:${PORT}/api-docs`);
+  console.log(`🤖 MCP Server: http://localhost:${PORT}/mcp/health`);
   console.log(`❤️  Health check: http://localhost:${PORT}/health`);
 });
 
