@@ -23,95 +23,82 @@ const allTools = [
   ...dashboardTools
 ];
 
-// MCP Server state
-let mcpServer = null;
-let mcpTransport = null;
-
-// Initialize MCP Server (lazy load ESM module)
-async function initMCPServer() {
-  if (mcpServer) return mcpServer;
-  
-  try {
-    const { Server } = await import("@modelcontextprotocol/sdk/server/index.js");
-    const { ListToolsRequestSchema, CallToolRequestSchema } = await import("@modelcontextprotocol/sdk/types.js");
-    
-    mcpServer = new Server(
-      { name: "portfolio-management-system", version: "1.0.0" },
-      { capabilities: { tools: {} } }
-    );
-
-    // Register tool list handler
-    mcpServer.setRequestHandler(ListToolsRequestSchema, async () => ({
-      tools: allTools.map(t => ({
-        name: t.name,
-        description: t.description,
-        inputSchema: t.inputSchema
-      }))
-    }));
-
-    // Register tool call handler
-    mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const tool = allTools.find(t => t.name === request.params.name);
-      if (!tool) {
-        return {
-          content: [{ 
-            type: "text", 
-            text: JSON.stringify({ 
-              error: true, 
-              code: "UNKNOWN_TOOL",
-              message: `Unknown tool: ${request.params.name}` 
-            }, null, 2) 
-          }],
-          isError: true
-        };
-      }
-      return await tool.handler(request.params.arguments, API_BASE_URL);
-    });
-
-    console.log("✅ MCP Server initialized with", allTools.length, "tools");
-    return mcpServer;
-  } catch (error) {
-    console.error("❌ Failed to initialize MCP Server:", error.message);
-    throw error;
-  }
-}
+// Store active sessions: sessionId -> { server, transport }
+const sessions = new Map();
 
 // Create Express router for MCP endpoints
 function createMCPRouter(express) {
   const router = express.Router();
-  
-  // Store active transports
-  const transports = new Map();
 
   // SSE endpoint for MCP connection
   router.get("/sse", async (req, res) => {
     try {
-      const server = await initMCPServer();
+      // Dynamic import ESM modules
+      const { Server } = await import("@modelcontextprotocol/sdk/server/index.js");
       const { SSEServerTransport } = await import("@modelcontextprotocol/sdk/server/sse.js");
+      const { ListToolsRequestSchema, CallToolRequestSchema } = await import("@modelcontextprotocol/sdk/types.js");
       
-      console.log("🔌 MCP SSE connection request received");
+      console.log("🔌 MCP SSE connection request");
+
+      // Create transport - it will handle SSE headers
+      const transport = new SSEServerTransport("/mcp/messages", res);
+      const sessionId = transport.sessionId;
       
-      // Set SSE headers
-      res.setHeader('Content-Type', 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Connection', 'keep-alive');
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.flushHeaders();
-      
-      const sessionId = `session_${Date.now()}`;
-      const transport = new SSEServerTransport(`/mcp/messages`, res);
-      transports.set(sessionId, transport);
-      
-      // Send session ID to client
-      res.write(`data: ${JSON.stringify({ sessionId })}\n\n`);
-      
-      req.on("close", () => {
-        console.log("🔌 MCP SSE connection closed:", sessionId);
-        transports.delete(sessionId);
+      console.log(`📡 MCP Session created: ${sessionId}`);
+
+      // Create a new server instance for this session
+      const server = new Server(
+        { name: "portfolio-management-system", version: "1.0.0" },
+        { capabilities: { tools: {} } }
+      );
+
+      // Register tool list handler
+      server.setRequestHandler(ListToolsRequestSchema, async () => {
+        console.log(`📋 Tools list requested (session: ${sessionId})`);
+        return {
+          tools: allTools.map(t => ({
+            name: t.name,
+            description: t.description,
+            inputSchema: t.inputSchema
+          }))
+        };
       });
 
+      // Register tool call handler
+      server.setRequestHandler(CallToolRequestSchema, async (request) => {
+        const toolName = request.params.name;
+        console.log(`🔧 Tool called: ${toolName} (session: ${sessionId})`);
+        
+        const tool = allTools.find(t => t.name === toolName);
+        if (!tool) {
+          return {
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({ 
+                error: true, 
+                code: "UNKNOWN_TOOL",
+                message: `Unknown tool: ${toolName}` 
+              }, null, 2) 
+            }],
+            isError: true
+          };
+        }
+        return await tool.handler(request.params.arguments, API_BASE_URL);
+      });
+
+      // Store session
+      sessions.set(sessionId, { server, transport });
+
+      // Handle connection close
+      res.on("close", () => {
+        console.log(`🔌 MCP Session closed: ${sessionId}`);
+        sessions.delete(sessionId);
+      });
+
+      // Connect server to transport (this calls transport.start() internally)
       await server.connect(transport);
-      console.log("✅ MCP SSE transport connected:", sessionId);
+      
+      console.log(`✅ MCP Server connected (session: ${sessionId})`);
       
     } catch (error) {
       console.error("❌ MCP SSE error:", error);
@@ -121,28 +108,30 @@ function createMCPRouter(express) {
     }
   });
 
-  // Message endpoint for MCP
+  // Message endpoint for MCP protocol messages
   router.post("/messages", express.json(), async (req, res) => {
     try {
-      // Get session ID from query or header
-      const sessionId = req.query.sessionId || req.headers['x-session-id'];
+      // Get session ID from query parameter (set by SSEServerTransport)
+      const sessionId = req.query.sessionId;
       
-      let transport;
-      if (sessionId && transports.has(sessionId)) {
-        transport = transports.get(sessionId);
-      } else {
-        // Use most recent transport if no session specified
-        transport = Array.from(transports.values()).pop();
-      }
-      
-      if (!transport) {
+      if (!sessionId) {
         return res.status(400).json({ 
           error: true, 
-          message: "No active SSE connection. Connect to /mcp/sse first." 
+          message: "Missing sessionId query parameter" 
         });
       }
 
-      await transport.handlePostMessage(req, res);
+      const session = sessions.get(sessionId);
+      if (!session) {
+        return res.status(404).json({ 
+          error: true, 
+          message: `Session not found: ${sessionId}. Connect to /mcp/sse first.` 
+        });
+      }
+
+      console.log(`📨 MCP Message received (session: ${sessionId})`);
+      await session.transport.handlePostMessage(req, res);
+      
     } catch (error) {
       console.error("❌ MCP message error:", error);
       if (!res.headersSent) {
@@ -157,11 +146,11 @@ function createMCPRouter(express) {
       status: "ok", 
       tools: allTools.length,
       apiBaseUrl: API_BASE_URL,
-      mcpInitialized: mcpServer !== null
+      activeSessions: sessions.size
     });
   });
 
-  // List all available tools (works without MCP protocol)
+  // List all available tools (JSON, no MCP protocol needed)
   router.get("/tools", (req, res) => {
     res.json({
       success: true,
@@ -187,6 +176,7 @@ function createMCPRouter(express) {
     }
 
     try {
+      console.log(`🔧 Direct execution: ${toolName}`);
       const result = await tool.handler(req.body, API_BASE_URL);
       res.json(result);
     } catch (error) {
@@ -202,7 +192,6 @@ function createMCPRouter(express) {
 
 module.exports = {
   createMCPRouter,
-  initMCPServer,
   allTools,
   API_BASE_URL
 };
