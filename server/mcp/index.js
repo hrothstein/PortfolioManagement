@@ -30,7 +30,77 @@ const sessions = new Map();
 function createMCPRouter(express) {
   const router = express.Router();
 
-  // SSE endpoint for MCP connection
+  // Streamable HTTP endpoint (POST) - for MCP Inspector and newer clients
+  router.post("/sse", async (req, res) => {
+    try {
+      const { Server } = await import("@modelcontextprotocol/sdk/server/index.js");
+      const { StreamableHTTPServerTransport } = await import("@modelcontextprotocol/sdk/server/streamableHttp.js");
+      const { ListToolsRequestSchema, CallToolRequestSchema } = await import("@modelcontextprotocol/sdk/types.js");
+      
+      console.log("🔌 MCP Streamable HTTP connection request");
+
+      // Create server for this request
+      const server = new Server(
+        { name: "portfolio-management-system", version: "1.0.0" },
+        { capabilities: { tools: {} } }
+      );
+
+      // Register tool list handler
+      server.setRequestHandler(ListToolsRequestSchema, async () => {
+        console.log(`📋 Tools list requested`);
+        return {
+          tools: allTools.map(t => ({
+            name: t.name,
+            description: t.description,
+            inputSchema: t.inputSchema
+          }))
+        };
+      });
+
+      // Register tool call handler
+      server.setRequestHandler(CallToolRequestSchema, async (request) => {
+        const toolName = request.params.name;
+        console.log(`🔧 Tool called: ${toolName}`);
+        
+        const tool = allTools.find(t => t.name === toolName);
+        if (!tool) {
+          return {
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({ 
+                error: true, 
+                code: "UNKNOWN_TOOL",
+                message: `Unknown tool: ${toolName}` 
+              }, null, 2) 
+            }],
+            isError: true
+          };
+        }
+        return await tool.handler(request.params.arguments, API_BASE_URL);
+      });
+
+      // Create Streamable HTTP transport
+      const transport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: undefined, // stateless
+      });
+
+      // Connect and handle the request
+      await server.connect(transport);
+      await transport.handleRequest(req, res);
+      
+    } catch (error) {
+      console.error("❌ MCP Streamable HTTP error:", error);
+      if (!res.headersSent) {
+        res.status(500).json({ 
+          jsonrpc: "2.0",
+          error: { code: -32603, message: error.message },
+          id: null
+        });
+      }
+    }
+  });
+
+  // SSE endpoint for MCP connection (GET) - for SSE-based clients
   router.get("/sse", async (req, res) => {
     try {
       // Dynamic import ESM modules
