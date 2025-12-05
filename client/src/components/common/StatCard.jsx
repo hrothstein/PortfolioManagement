@@ -19,3 +19,6 @@ function StatCard({ label, value, change, isCurrency = false, isPercent = false 
 
 export default StatCard;
 
+
+
+

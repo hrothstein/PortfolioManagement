@@ -109,7 +109,8 @@ function createMCPRouter(express) {
   });
 
   // Message endpoint for MCP protocol messages
-  router.post("/messages", express.json(), async (req, res) => {
+  // NOTE: Do NOT use express.json() here - handlePostMessage needs raw stream
+  router.post("/messages", async (req, res) => {
     try {
       // Get session ID from query parameter (set by SSEServerTransport)
       const sessionId = req.query.sessionId;

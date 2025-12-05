@@ -13,8 +13,14 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
 app.use(morgan('dev'));
+
+// MCP Routes MUST be mounted BEFORE express.json() middleware
+// because MCP SSE transport needs raw request body stream
+app.use('/mcp', createMCPRouter(express));
+
+// JSON body parser for all other routes
+app.use(express.json());
 
 // Swagger API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
@@ -40,9 +46,6 @@ app.use('/api/v1/holdings', holdingsRouter);
 app.use('/api/v1/transactions', transactionsRouter);
 app.use('/api/v1/securities', securitiesRouter);
 app.use('/api/v1/dashboard', dashboardRouter);
-
-// MCP Server Routes (Model Context Protocol for AI agents)
-app.use('/mcp', createMCPRouter(express));
 
 // Serve static files from React app in production
 if (process.env.NODE_ENV === 'production') {
