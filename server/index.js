@@ -5,6 +5,7 @@ const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger');
 const { seedData } = require('./seed');
+const { createMCPRouter } = require('./mcp');
 
 // Create Express app
 const app = express();
@@ -12,8 +13,14 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
 app.use(morgan('dev'));
+
+// MCP Routes MUST be mounted BEFORE express.json() middleware
+// because MCP SSE transport needs raw request body stream
+app.use('/mcp', createMCPRouter(express));
+
+// JSON body parser for all other routes
+app.use(express.json());
 
 // Swagger API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
@@ -91,6 +98,7 @@ app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
   console.log(`📊 API available at http://localhost:${PORT}/api/v1`);
   console.log(`📚 Swagger Docs: http://localhost:${PORT}/api-docs`);
+  console.log(`🤖 MCP Server: http://localhost:${PORT}/mcp/health`);
   console.log(`❤️  Health check: http://localhost:${PORT}/health`);
 });
 

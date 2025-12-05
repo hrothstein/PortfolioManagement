@@ -17,6 +17,7 @@ A comprehensive portfolio management system built for wealth management advisors
 
 - **Frontend**: React 18 with Tailwind CSS
 - **Backend**: Node.js/Express.js
+- **MCP Server**: Model Context Protocol for AI agent integration
 - **Data Store**: In-memory (resets on server restart)
 - **Charts**: Chart.js with React integration
 
@@ -137,6 +138,49 @@ http://localhost:3001/api/v1
 - `GET /dashboard/top-performers` - Get top performing holdings
 - `GET /dashboard/recent-transactions` - Get recent transactions
 
+## 🤖 MCP Server (Model Context Protocol)
+
+The Portfolio Management System includes an MCP server that exposes all 41 REST API endpoints as tools for AI agent integration.
+
+### MCP Endpoints
+
+```
+GET  /mcp/health   - Check MCP server status and tool count
+GET  /mcp/tools    - List all available MCP tools
+GET  /mcp/sse      - SSE connection for MCP clients
+POST /mcp/messages - Handle MCP protocol messages
+```
+
+### Available Tools (41 total)
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| **Client** | 6 | get_clients, get_client, get_client_summary, create_client, update_client, delete_client |
+| **Account** | 6 | get_accounts, get_account, get_accounts_by_client, create_account, update_account, delete_account |
+| **Portfolio** | 7 | get_portfolios, get_portfolio, get_portfolio_performance, get_portfolios_by_account, create_portfolio, update_portfolio, delete_portfolio |
+| **Holding** | 6 | get_holdings, get_holding, get_holdings_by_portfolio, create_holding, update_holding, delete_holding |
+| **Transaction** | 6 | get_transactions, get_transaction, get_transactions_by_portfolio, create_transaction, update_transaction, delete_transaction |
+| **Security** | 5 | get_securities, get_security, get_security_by_symbol, get_securities_by_type, update_security |
+| **Dashboard** | 5 | get_dashboard_overview, get_top_performers, get_top_losers, get_recent_transactions, get_allocation |
+
+All tools follow the naming convention: `portfolio_{operation}_{entity}`
+
+### Testing MCP
+
+```bash
+# Check health and tool count
+curl http://localhost:3001/mcp/health
+
+# List all tools
+curl http://localhost:3001/mcp/tools
+```
+
+### Environment Variables
+
+```bash
+API_BASE_URL=http://localhost:3001/api/v1  # URL for MCP to call REST API
+```
+
 ## 📁 Project Structure
 
 ```
@@ -153,6 +197,18 @@ portfolio-management-system/
 │   │   ├── transactions.js
 │   │   ├── securities.js
 │   │   └── dashboard.js
+│   ├── mcp/                  # MCP Server
+│   │   ├── index.js          # MCP server entry
+│   │   ├── tools/            # 41 MCP tools
+│   │   │   ├── clientTools.js
+│   │   │   ├── accountTools.js
+│   │   │   ├── portfolioTools.js
+│   │   │   ├── holdingTools.js
+│   │   │   ├── transactionTools.js
+│   │   │   ├── securityTools.js
+│   │   │   └── dashboardTools.js
+│   │   └── utils/
+│   │       └── responseFormatter.js
 │   ├── services/
 │   │   └── portfolioService.js
 │   └── data/
@@ -225,7 +281,7 @@ VITE_API_URL=http://localhost:3001/api/v1
 
 ## 🔄 Future Enhancements
 
-- MCP (Model Context Protocol) integration
+- ✅ MCP (Model Context Protocol) integration - **Implemented!**
 - Real-time market data feeds
 - Trade execution simulation
 - Performance benchmarking
