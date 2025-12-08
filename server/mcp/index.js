@@ -31,7 +31,7 @@ function createMCPRouter(express) {
   const router = express.Router();
 
   // Streamable HTTP endpoint (POST) - for MCP Inspector and newer clients
-  router.post("/sse", async (req, res) => {
+  router.post("/mcp", async (req, res) => {
     try {
       const { Server } = await import("@modelcontextprotocol/sdk/server/index.js");
       const { StreamableHTTPServerTransport } = await import("@modelcontextprotocol/sdk/server/streamableHttp.js");
