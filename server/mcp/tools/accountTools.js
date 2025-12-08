@@ -7,7 +7,8 @@ const accountTools = [
     inputSchema: {
       type: "object",
       properties: {},
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/accounts`);
@@ -24,7 +25,8 @@ const accountTools = [
           description: "The unique account identifier (e.g., ACC-001)"
         }
       },
-      required: ["accountId"]
+      required: ["accountId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/accounts/${args.accountId}`);
@@ -41,7 +43,8 @@ const accountTools = [
           description: "The unique client identifier (e.g., CLI-001)"
         }
       },
-      required: ["clientId"]
+      required: ["clientId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/accounts/client/${args.clientId}`);
@@ -71,7 +74,8 @@ const accountTools = [
           description: "Initial cash balance in USD (default: 0)"
         }
       },
-      required: ["clientId", "accountType", "accountName"]
+      required: ["clientId", "accountType", "accountName"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("post", `${baseUrl}/accounts`, args);
@@ -101,7 +105,8 @@ const accountTools = [
           description: "Cash balance in USD"
         }
       },
-      required: ["accountId"]
+      required: ["accountId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const { accountId, ...updateData } = args;
@@ -119,7 +124,8 @@ const accountTools = [
           description: "The unique account identifier (e.g., ACC-001)"
         }
       },
-      required: ["accountId"]
+      required: ["accountId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("delete", `${baseUrl}/accounts/${args.accountId}`);
@@ -128,5 +134,6 @@ const accountTools = [
 ];
 
 module.exports = { accountTools };
+
 
 

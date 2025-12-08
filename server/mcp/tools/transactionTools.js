@@ -25,7 +25,8 @@ const transactionTools = [
           description: "Filter by security symbol (e.g., AAPL)"
         }
       },
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const params = new URLSearchParams();
@@ -49,7 +50,8 @@ const transactionTools = [
           description: "The unique transaction identifier (e.g., TXN-001)"
         }
       },
-      required: ["transactionId"]
+      required: ["transactionId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/transactions/${args.transactionId}`);
@@ -66,7 +68,8 @@ const transactionTools = [
           description: "The unique portfolio identifier (e.g., PRT-001)"
         }
       },
-      required: ["portfolioId"]
+      required: ["portfolioId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/transactions/portfolio/${args.portfolioId}`);
@@ -116,7 +119,8 @@ const transactionTools = [
           description: "Optional notes about the transaction"
         }
       },
-      required: ["portfolioId", "securityId", "transactionType", "quantity", "pricePerUnit"]
+      required: ["portfolioId", "securityId", "transactionType", "quantity", "pricePerUnit"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("post", `${baseUrl}/transactions`, args);
@@ -146,7 +150,8 @@ const transactionTools = [
           description: "Settlement date (ISO 8601 format)"
         }
       },
-      required: ["transactionId"]
+      required: ["transactionId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const { transactionId, ...updateData } = args;
@@ -164,7 +169,8 @@ const transactionTools = [
           description: "The unique transaction identifier (e.g., TXN-001)"
         }
       },
-      required: ["transactionId"]
+      required: ["transactionId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("delete", `${baseUrl}/transactions/${args.transactionId}`);
@@ -173,5 +179,6 @@ const transactionTools = [
 ];
 
 module.exports = { transactionTools };
+
 
 

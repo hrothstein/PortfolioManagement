@@ -7,7 +7,8 @@ const portfolioTools = [
     inputSchema: {
       type: "object",
       properties: {},
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/portfolios`);
@@ -24,7 +25,8 @@ const portfolioTools = [
           description: "The unique portfolio identifier (e.g., PRT-001)"
         }
       },
-      required: ["portfolioId"]
+      required: ["portfolioId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/portfolios/${args.portfolioId}`);
@@ -41,7 +43,8 @@ const portfolioTools = [
           description: "The unique portfolio identifier (e.g., PRT-001)"
         }
       },
-      required: ["portfolioId"]
+      required: ["portfolioId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/portfolios/${args.portfolioId}/performance`);
@@ -58,7 +61,8 @@ const portfolioTools = [
           description: "The unique account identifier (e.g., ACC-001)"
         }
       },
-      required: ["accountId"]
+      required: ["accountId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/portfolios/account/${args.accountId}`);
@@ -96,7 +100,8 @@ const portfolioTools = [
           description: "Benchmark index for performance comparison (e.g., SPY)"
         }
       },
-      required: ["accountId", "clientId", "portfolioName", "portfolioType"]
+      required: ["accountId", "clientId", "portfolioName", "portfolioType"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("post", `${baseUrl}/portfolios`, args);
@@ -130,7 +135,8 @@ const portfolioTools = [
           description: "Benchmark index for performance comparison"
         }
       },
-      required: ["portfolioId"]
+      required: ["portfolioId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const { portfolioId, ...updateData } = args;
@@ -148,7 +154,8 @@ const portfolioTools = [
           description: "The unique portfolio identifier (e.g., PRT-001)"
         }
       },
-      required: ["portfolioId"]
+      required: ["portfolioId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("delete", `${baseUrl}/portfolios/${args.portfolioId}`);
@@ -157,5 +164,6 @@ const portfolioTools = [
 ];
 
 module.exports = { portfolioTools };
+
 
 

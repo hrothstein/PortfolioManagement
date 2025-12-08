@@ -7,7 +7,8 @@ const holdingTools = [
     inputSchema: {
       type: "object",
       properties: {},
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/holdings`);
@@ -24,7 +25,8 @@ const holdingTools = [
           description: "The unique holding identifier (e.g., HLD-001)"
         }
       },
-      required: ["holdingId"]
+      required: ["holdingId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/holdings/${args.holdingId}`);
@@ -41,7 +43,8 @@ const holdingTools = [
           description: "The unique portfolio identifier (e.g., PRT-001)"
         }
       },
-      required: ["portfolioId"]
+      required: ["portfolioId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/holdings/portfolio/${args.portfolioId}`);
@@ -74,7 +77,8 @@ const holdingTools = [
           description: "Date the position was acquired (YYYY-MM-DD format)"
         }
       },
-      required: ["portfolioId", "securityId", "quantity", "averageCostBasis"]
+      required: ["portfolioId", "securityId", "quantity", "averageCostBasis"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("post", `${baseUrl}/holdings`, args);
@@ -99,7 +103,8 @@ const holdingTools = [
           description: "Average cost per share/unit in USD"
         }
       },
-      required: ["holdingId"]
+      required: ["holdingId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const { holdingId, ...updateData } = args;
@@ -117,7 +122,8 @@ const holdingTools = [
           description: "The unique holding identifier (e.g., HLD-001)"
         }
       },
-      required: ["holdingId"]
+      required: ["holdingId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("delete", `${baseUrl}/holdings/${args.holdingId}`);
@@ -126,5 +132,6 @@ const holdingTools = [
 ];
 
 module.exports = { holdingTools };
+
 
 

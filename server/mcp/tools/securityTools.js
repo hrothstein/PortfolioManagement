@@ -7,7 +7,8 @@ const securityTools = [
     inputSchema: {
       type: "object",
       properties: {},
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/securities`);
@@ -24,7 +25,8 @@ const securityTools = [
           description: "The unique security identifier (e.g., SEC-001)"
         }
       },
-      required: ["securityId"]
+      required: ["securityId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/securities/${args.securityId}`);
@@ -41,7 +43,8 @@ const securityTools = [
           description: "The ticker symbol (e.g., AAPL, MSFT, GOOGL, SPY)"
         }
       },
-      required: ["symbol"]
+      required: ["symbol"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/securities/symbol/${args.symbol}`);
@@ -59,7 +62,8 @@ const securityTools = [
           description: "The security type to filter by"
         }
       },
-      required: ["type"]
+      required: ["type"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/securities/type/${args.type}`);
@@ -92,7 +96,8 @@ const securityTools = [
           description: "Percentage change from previous close"
         }
       },
-      required: ["securityId"]
+      required: ["securityId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const { securityId, ...updateData } = args;
@@ -102,5 +107,6 @@ const securityTools = [
 ];
 
 module.exports = { securityTools };
+
 
 

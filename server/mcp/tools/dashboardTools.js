@@ -7,7 +7,8 @@ const dashboardTools = [
     inputSchema: {
       type: "object",
       properties: {},
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/dashboard/overview`);
@@ -24,7 +25,8 @@ const dashboardTools = [
           description: "Maximum number of results to return (default: 10)"
         }
       },
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const limit = args.limit ? `?limit=${args.limit}` : "";
@@ -42,7 +44,8 @@ const dashboardTools = [
           description: "Maximum number of results to return (default: 10)"
         }
       },
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const limit = args.limit ? `?limit=${args.limit}` : "";
@@ -60,7 +63,8 @@ const dashboardTools = [
           description: "Maximum number of results to return (default: 10)"
         }
       },
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const limit = args.limit ? `?limit=${args.limit}` : "";
@@ -73,7 +77,8 @@ const dashboardTools = [
     inputSchema: {
       type: "object",
       properties: {},
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/dashboard/allocation`);
@@ -82,5 +87,6 @@ const dashboardTools = [
 ];
 
 module.exports = { dashboardTools };
+
 
 

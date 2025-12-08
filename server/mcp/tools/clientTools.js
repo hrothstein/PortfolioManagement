@@ -7,7 +7,8 @@ const clientTools = [
     inputSchema: {
       type: "object",
       properties: {},
-      required: []
+      required: [],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/clients`);
@@ -24,7 +25,8 @@ const clientTools = [
           description: "The unique client identifier (e.g., CLI-001)"
         }
       },
-      required: ["clientId"]
+      required: ["clientId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/clients/${args.clientId}`);
@@ -41,7 +43,8 @@ const clientTools = [
           description: "The unique client identifier (e.g., CLI-001)"
         }
       },
-      required: ["clientId"]
+      required: ["clientId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("get", `${baseUrl}/clients/${args.clientId}/summary`);
@@ -84,7 +87,8 @@ const clientTools = [
           description: "Client's investment objective"
         }
       },
-      required: ["firstName", "lastName", "email", "riskTolerance", "investmentObjective"]
+      required: ["firstName", "lastName", "email", "riskTolerance", "investmentObjective"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("post", `${baseUrl}/clients`, args);
@@ -127,7 +131,8 @@ const clientTools = [
           description: "Client's investment objective"
         }
       },
-      required: ["clientId"]
+      required: ["clientId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       const { clientId, ...updateData } = args;
@@ -145,7 +150,8 @@ const clientTools = [
           description: "The unique client identifier (e.g., CLI-001)"
         }
       },
-      required: ["clientId"]
+      required: ["clientId"],
+      additionalProperties: false
     },
     handler: async (args, baseUrl) => {
       return callAPI("delete", `${baseUrl}/clients/${args.clientId}`);
@@ -154,5 +160,6 @@ const clientTools = [
 ];
 
 module.exports = { clientTools };
+
 
 
